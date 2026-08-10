@@ -59,15 +59,46 @@ class DatabaseService:
                 )
             """)
 
-class StrategyService:
-    def calculate(
-        self,
-        race_minutes: int,
-        lap_time_seconds: float,
-        fuel_capacity: float,
-        fuel_per_lap: float,
-        ve: bool,
-        ve_per_lap: int | None
-    ):
-        pass
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS referencetimes (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    track_id INTEGER NOT NULL,
+                    carclass_id INTEGER NOT NULL,
+                    laptime REAL NOT NULL,
+                    date_set TEXT,
+                    source TEXT,
+                    FOREIGN KEY (carclass_id) REFERENCES car_classes(id),
+                    FOREIGN KEY (track_id) REFERENCES tracks(id)
+                )
+            """)
+
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS fuelusage (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    track_id INTEGER NOT NULL,
+                    car_id INTEGER NOT NULL,
+                    fuel_usage REAL NOT NULL,
+                    ve_usage REAL DEFAULT NULL,
+                    UNIQUE(track_id, car_id)
+                    FOREIGN KEY (car_id) REFERENCES cars(id),
+                    FOREIGN KEY (track_id) REFERENCES tracks(id)
+                )
+            """)
+
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS strategies (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT NOT NULL,
+                    track_id INTEGER NOT NULL,
+                    car_id INTEGER NOT NULL,
+                    race_minutes INTEGER NOT NULL,
+                    laptime_override REAL,
+                    laps_override INTEGER,
+                    usage_multiplier INTEGER,
+                    fuel_capacity_override INTEGER,
+                    ve_capacity_override INTEGER,
+                    FOREIGN KEY (car_id) REFERENCES cars(id),
+                    FOREIGN KEY (track_id) REFERENCES tracks(id)
+                )
+            """)
 

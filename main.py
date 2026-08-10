@@ -3,7 +3,7 @@ import pandas as pd
 
 from models import *
 from Repositories.carclass_repository import *
-from services import *
+from services.database_service import *
 
 
 db = DatabaseService()
