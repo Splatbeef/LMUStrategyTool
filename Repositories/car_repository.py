@@ -22,7 +22,7 @@ class CarRepository:
 
             return cursor.lastrowid
 
-    def get_all(self) -> list:
+    def get_all(self) -> list[Car]:
         with self.db.get_connection() as conn:
             cursor = conn.cursor()
 
@@ -30,7 +30,7 @@ class CarRepository:
                 """
                 SELECT id, name, carclass_id, fuel_capacity, ve
                 FROM cars
-                ORDER BY name
+                ORDER BY carclass_id, name
                 """
             ).fetchall()
 
@@ -121,26 +121,23 @@ class CarRepository:
 
         return row is not None
 
-    def get_by_name(self, name: str) -> list[Car]:
+    def get_by_name(self, name: str) -> Car:
         with self.db.get_connection() as conn:
             cursor = conn.cursor()
 
-            rows = cursor.execute(
+            row = cursor.execute(
                 """
                 SELECT id, name, carclass_id, fuel_capacity, ve
                 FROM cars
                 WHERE name = ?
                 """,
                 (name,)
-            ).fetchall()
+            ).fetchone()
 
-        return [
-            Car(
+        return Car(
                 id=row[0],
                 name=row[1],
                 carclass_id=row[2],
                 fuel_capacity=row[3],
                 ve=bool(row[4])
             )
-            for row in rows
-        ]

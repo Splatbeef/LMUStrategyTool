@@ -22,7 +22,7 @@ class CarClassRepository:
 
             return cursor.lastrowid
 
-    def get_all(self) -> list:
+    def get_all(self) -> list[CarClass]:
         with self.db.get_connection() as conn:
             cursor = conn.cursor()
 
@@ -52,7 +52,7 @@ class CarClassRepository:
                 FROM car_classes
                 WHERE id = ?
                 """,
-                (id)
+                (id,)
             ).fetchone()
 
         return CarClass(

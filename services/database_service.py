@@ -31,17 +31,18 @@ class DatabaseService:
                 CREATE TABLE IF NOT EXISTS tracks (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     name TEXT NOT NULL,
-                    layout TEXT
+                    layout TEXT,
+                    UNIQUE(name, layout)
                 )
             """)
 
             cur.execute("""
                 CREATE TABLE IF NOT EXISTS cars (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    name TEXT NOT NULL,
+                    name TEXT NOT NULL UNIQUE,
                     carclass_id INTEGER NOT NULL,
                     fuel_capacity INTEGER,
-                    ve INTEGER
+                    ve INTEGER,
                     FOREIGN KEY (carclass_id) REFERENCES car_classes(id)
                 )
             """)

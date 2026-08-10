@@ -22,7 +22,7 @@ class TrackRepository:
 
             return cursor.lastrowid
 
-    def get_all(self) -> list:
+    def get_all(self) -> list[Track]:
         with self.db.get_connection() as conn:
             cursor = conn.cursor()
 
@@ -30,7 +30,7 @@ class TrackRepository:
                 """
                 SELECT id, name, layout
                 FROM tracks
-                ORDER BY name
+                ORDER BY name, layout
                 """
             ).fetchall()
 
@@ -125,6 +125,22 @@ class TrackRepository:
                 LIMIT 1
                 """,
                 (name,layout)
+            ).fetchone()
+
+        return row is not None
+
+    def track_exists(self, name: str) -> bool:
+        with self.db.get_connection() as conn:
+            cursor = conn.cursor()
+
+            row = cursor.execute(
+                """
+                SELECT 1
+                FROM tracks
+                WHERE LOWER(name) = LOWER(?)
+                LIMIT 1
+                """,
+                (name,)
             ).fetchone()
 
         return row is not None

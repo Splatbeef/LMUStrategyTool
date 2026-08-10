@@ -22,7 +22,7 @@ class FuelRepository:
 
             return cursor.lastrowid
 
-    def get_all(self) -> list:
+    def get_all(self) -> list[FuelUsage]:
         with self.db.get_connection() as conn:
             cursor = conn.cursor()
 

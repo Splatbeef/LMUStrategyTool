@@ -13,6 +13,7 @@ class StrategyService:
         self.reference_repo = repos.reference
         self.fuel_repo = repos.fuel
         self.strategy_repo = repos.strategy
+        self.class_repo = repos.classes
 
     def get_laptime(self, strategy: Strategy) -> float:
         if strategy.laptime_override is not None:

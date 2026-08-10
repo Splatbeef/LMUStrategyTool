@@ -33,16 +33,10 @@ class Strategy:
     ve_capacity_override: int | None
 
 @dataclass
-class StrategyResult:
-    push_plan: RacePlan
-    plus_one_plan: RacePlan
-    save_plan: RacePlan | None
-
-@dataclass
-class RacePlan:
-    race_laps: int
-    pit_stops: int
-    stints: list[Stint]
+class TireChange:
+    changed_wheels: set[str]
+    compound: str | None
+    new_tires: bool | None
 
 @dataclass
 class Stint:
@@ -56,11 +50,16 @@ class Stint:
     tire_change: TireChange
 
 @dataclass
-class TireChange:
-    changed_wheels: set[str]
-    compound: str | None
-    new_tires: bool | None
+class RacePlan:
+    race_laps: int
+    pit_stops: int
+    stints: list[Stint]
 
+@dataclass
+class StrategyResult:
+    push_plan: RacePlan
+    plus_one_plan: RacePlan
+    save_plan: RacePlan | None
 
 @dataclass
 class Car:
