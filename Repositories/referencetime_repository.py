@@ -23,7 +23,7 @@ class ReferenceTimeRepository:
 
             return cursor.lastrowid
 
-    def get_all(self) -> list:
+    def get_all(self) -> list[ReferenceTime]:
         with self.db.get_connection() as conn:
             cursor = conn.cursor()
 
@@ -41,7 +41,7 @@ class ReferenceTimeRepository:
                 track_id=row[1],
                 carclass_id=row[2],
                 laptime=row[3],
-                date_set=dt.date.fromisoformat(row[4]),
+                date_set=self.parse_date(row[4]),
                 source=row[5]
             )
             for row in rows
@@ -68,7 +68,7 @@ class ReferenceTimeRepository:
                         track_id=row[1],
                         carclass_id=row[2],
                         laptime=row[3],
-                        date_set=dt.date.fromisoformat(row[4]),
+                        date_set=self.parse_date(row[4]),
                         source=row[5]
                     )
 
@@ -114,7 +114,6 @@ class ReferenceTimeRepository:
     self,
     track_id: int,
     carclass_id: int,
-    laptime: float
     ) -> bool:
 
         with self.db.get_connection() as conn:
@@ -126,10 +125,9 @@ class ReferenceTimeRepository:
                 FROM referencetimes
                 WHERE track_id = ?
                 AND carclass_id = ?
-                AND laptime = ?
                 LIMIT 1
                 """,
-                (track_id, carclass_id, laptime)
+                (track_id, carclass_id)
             ).fetchone()
 
         return row is not None
@@ -154,7 +152,7 @@ class ReferenceTimeRepository:
                             track_id=row[1],
                             carclass_id=row[2],
                             laptime=row[3],
-                            date_set=dt.date.fromisoformat(row[4]),
+                            date_set=self.parse_date(row[4]),
                             source=row[5]
                         )
             for row in rows
@@ -180,7 +178,7 @@ class ReferenceTimeRepository:
                             track_id=row[1],
                             carclass_id=row[2],
                             laptime=row[3],
-                            date_set=dt.date.fromisoformat(row[4]),
+                            date_set=self.parse_date(row[4]),
                             source=row[5]
                         )
             for row in rows
@@ -211,7 +209,7 @@ class ReferenceTimeRepository:
                             track_id=row[1],
                             carclass_id=row[2],
                             laptime=row[3],
-                            date_set=dt.date.fromisoformat(row[4]),
+                            date_set=self.parse_date(row[4]),
                             source=row[5]
                         )
             for row in rows
@@ -246,7 +244,7 @@ class ReferenceTimeRepository:
             track_id=row[1],
             carclass_id=row[2],
             laptime=row[3],
-            date_set=dt.date.fromisoformat(row[4]),
+            date_set=self.parse_date(row[4]),
             source=row[5]
         )
 
@@ -270,8 +268,26 @@ class ReferenceTimeRepository:
                 track_id=row[1],
                 carclass_id=row[2],
                 laptime=row[3],
-                date_set=dt.date.fromisoformat(row[4]),
+                date_set=self.parse_date(row[4]),
                 source=row[5]
             )
             for row in rows
         ]
+
+    def parse_date(self, value):
+        value = str(value)
+
+        try:
+            return dt.date.fromisoformat(value)
+        except ValueError:
+            return dt.datetime
+
+    def clear(self):
+        with self.db.get_connection() as conn:
+            cursor = conn.cursor()
+
+            cursor.execute("""
+                DELETE FROM referencetimes
+            """)
+
+            conn.commit()

@@ -1,23 +1,22 @@
-from Repositories.repositories import Repositories
 from models import *
 import pandas as pd
 import numpy as np
+import datetime as dt
+import math
 
 
 
 class ReferenceService:
-    def __init__(self, repos: Repositories):
+    def __init__(self, track_repo, car_repo, reference_repo):
         SHEET_ID = "1uNX-PRtZSxjo6jM848tyLuHawBk0FzWNpVqo9WDYpDI"
         GID = "2029862573"
         self.url = (
             f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/export"
             f"?format=csv&gid={GID}"
         )
-        self.repos = repos
-        self.track_repo = repos.track
-        self.car_repo = repos.car
-
-        
+        self.track_repo = track_repo
+        self.car_repo = car_repo
+        self.reference_repo = reference_repo
 
     def sync(self):
         df = self.load_lmu_laptimes()
@@ -50,23 +49,61 @@ class ReferenceService:
             for carname, car in cars.items():
                 laptimestr = row[carname]
                 laptime = self.parse_laptime(laptimestr)
+                if laptime is None:
+                    continue
+                class_id = car.carclass_id
 
-                #Compare with best class laptime
-                #Add/update if better/does not exist
+                if self.reference_repo.exists(track.id, class_id):
+                    best = self.reference_repo.get_best_reference(track.id, class_id)
+                    if laptime < best.laptime:
+                        newlaptime = ReferenceTime(
+                            id = best.id,
+                            track_id = track.id,
+                            carclass_id = class_id,
+                            laptime = laptime,
+                            date_set = dt.date.today(),
+                            source="GO Setups"
+                        )
+                        self.reference_repo.update(newlaptime)
+                else:
+                    newlaptime = ReferenceTime(
+                            id = None,
+                            track_id = track.id,
+                            carclass_id = class_id,
+                            laptime = laptime,
+                            date_set = dt.date.today(),
+                            source="GO Setups"
+                        )
+                    self.reference_repo.add(newlaptime)
 
-
-
-    def parse_laptime(self, time: str) -> float:
+    def parse_laptime(self, time) -> float:
+        if pd.isna(time):
+            return None
+        time = str(time)
+        if time == "":
+            return None
         time = time.strip()
         parts = time.split(".")
         if len(parts) == 3:
             time = f"{parts[0]}:{parts[1]}.{parts[2]}"
-        if ":" in time:
-            parts = time.split(":")
-            value = (60*int(parts[0]))+float(parts[1])
-        else:
-            value=float(time)
-        return value
+        try:
+            if ":" in time:
+                parts = time.split(":")
+                value = (60*int(parts[0]))+float(parts[1])
+            else:
+                value=float(time)
+            return value
+        except ValueError:
+            print(f"Could not parse laptime: {time}")
+            return None
+
+    def text_from_laptime(self, laptime):
+        if laptime < 60:
+            return f"{laptime:.3f}"
+        minutes = math.floor(laptime/60)
+        seconds = laptime % 60
+        return f"{minutes}:{seconds:06.3f}"
+        
 
     def find_name_layout(self, name: str):
         splitname = name.split(" ")
@@ -85,14 +122,9 @@ class ReferenceService:
                 layout = layout.strip()
         return trackname, layout
 
-
-    def add_track(self):
-        pass
-
-
-    def load_lmu_laptimes(csv_path_or_url):
+    def load_lmu_laptimes(self):
         # Load without treating any row as a header
-        raw = pd.read_csv(csv_path_or_url, header=None)
+        raw = pd.read_csv(self.url, header=None)
 
         # Find the row containing "TRACKS & CARS"
         header_row = raw[

@@ -166,3 +166,23 @@ class TrackRepository:
             )
             for row in rows
         ]
+
+    def get_by_name_layout(self, name: str, layout: str) -> Track:
+        with self.db.get_connection() as conn:
+            cursor = conn.cursor()
+
+            row = cursor.execute(
+                """
+                SELECT id, name, layout
+                FROM tracks
+                WHERE LOWER(name) = LOWER(?) AND LOWER(layout) = LOWER(?)
+                LIMIT 1
+                """,
+                (name,layout)
+            ).fetchone()
+
+        return Track(
+                id=row[0],
+                name=row[1],
+                layout=row[2]
+            )

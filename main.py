@@ -12,6 +12,7 @@ from views.strategyview import *
 from views.carsview import *
 from views.tracksview import *
 from views.fuelusageview import *
+from views.referenceview import *
 
 
 class MainApp:
@@ -111,7 +112,7 @@ class MainApp:
         self.page.update()
 
     def show_reference_times(self):
-        self.content.content = ft.Text("Reference Times")
+        self.content.content = ReferenceView(self.repos.reference, self.repos.track, self.repos.classes, self.repos.car)
         self.page.update()
 
 def seed_database(repos: Repositories):
