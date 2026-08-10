@@ -48,6 +48,7 @@ class Stint:
     ve_used: float | None
     stint_time: float
     tire_change: TireChange
+    fuel_ratio = float | None
 
 @dataclass
 class RacePlan:

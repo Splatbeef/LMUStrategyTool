@@ -14,6 +14,7 @@ class StrategyService:
         self.fuel_repo = repos.fuel
         self.strategy_repo = repos.strategy
         self.class_repo = repos.classes
+        self.track_repo = repos.track
 
     def get_laptime(self, strategy: Strategy) -> float:
         if strategy.laptime_override is not None:
@@ -57,6 +58,8 @@ class StrategyService:
             car = self.car_repo.get_by_id(strategy.car_id)
             if car is None:
                raise ValueError(f"Car {strategy.car_id} not found")
+            if (self.class_repo.get_by_id(car.carclass_id) == "LMP2 (WEC)") and (self.track_repo.get_by_id(strategy.track_id).name == "Le Mans"):
+                return 75
             return car.fuel_capacity
 
     def get_ve_usage(self, strategy: Strategy) -> float | None:
@@ -172,14 +175,21 @@ class StrategyService:
 
     def get_stint_fuel_usage(self, strategy: Strategy, stint_length: int) -> float:
         capacity = self.get_fuel_capacity(strategy)
-        return capacity/stint_length
+        laps_cap = self.get_fuel_stint_laps(strategy)
+        if stint_length > laps_cap:
+            return capacity/stint_length
+        return self.get_fuel_usage(strategy)
+        
 
     def get_stint_ve_usage(self, strategy: Strategy, stint_length: int) -> float | None:
         capacity = 100
         usage = self.get_ve_usage(strategy)
         if usage is None:
             return None
-        return capacity/stint_length
+        laps_cap = self.get_ve_stint_laps(strategy)
+        if stint_length > laps_cap:
+            return capacity/stint_length
+        return usage
 
     def build_stints(self, strategy: Strategy, stint_lengths: list[int], target_stint_length: int | None = None) -> list[Stint]:
         stints=[]
@@ -196,6 +206,7 @@ class StrategyService:
             if ve_usage is not None:
                 ve = min(laps * ve_usage, 100)
                 ve_usage_real = ve/laps
+                fr = fuel/ve
             else:
                 ve = None
                 ve_usage_real = None
@@ -213,7 +224,8 @@ class StrategyService:
                     ve_per_lap = ve_usage_real,
                     ve_used = ve,
                     stint_time = laps*laptime,
-                    tire_change=tirechange
+                    tire_change=tirechange,
+                    fuel_ratio = fr
                 )
             )
         return stints

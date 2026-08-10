@@ -92,13 +92,17 @@ class FuelUsageView(ft.Container):
             self.track_repo.get_all(),
             key=lambda t: (t.name.lower(), t.layout.lower())
         )
-        self.track_selected.options = [
-            ft.dropdown.Option(
-                key=str(c.id),
-                text=f"{c.name} ({c.layout})"
-            ) 
-            for c in tracks
-        ]
+        for c in tracks:
+            if len(c.layout)>0:
+                trackstr=f"{c.name} ({c.layout})"
+            else:
+                trackstr=c.name
+            self.track_selected.options.append(
+                ft.dropdown.Option(
+                    key=str(c.id),
+                    text=trackstr
+                ) 
+            )
 
     def refresh_table(self):
         usages = self.fuel_repo.get_all()
@@ -109,13 +113,19 @@ class FuelUsageView(ft.Container):
             car = self.car_repo.get_by_id(u.car_id)
             track = self.track_repo.get_by_id(u.track_id)
             carclass = self.class_repo.get_by_id(car.carclass_id)
+            if track is None:
+                trackstr = ""
+            elif len(track.layout) > 1:
+                trackstr = f"{track.name} ({track.layout})"
+            else:
+                trackstr = track.name
 
             self.usage_table.rows.append(
                 ft.DataRow(
                     on_select_change=lambda e, u=u: self.edit_usage(u),
                     cells=[
                         ft.DataCell(ft.Text(f"{car.name} ({carclass.name})")),
-                        ft.DataCell(ft.Text(f"{track.name} ({track.layout})")),
+                        ft.DataCell(ft.Text(trackstr)),
                         ft.DataCell(ft.Text(str(u.fuel_usage))),
                         ft.DataCell(ft.Text(str(u.ve_usage) if u.ve_usage is not None else "No VE"))
                     ]

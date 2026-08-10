@@ -22,7 +22,7 @@ class StrategyRepository:
 
             return cursor.lastrowid
 
-    def get_all(self) -> list:
+    def get_all(self) -> list[Strategy]:
         with self.db.get_connection() as conn:
             cursor = conn.cursor()
 

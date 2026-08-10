@@ -96,7 +96,7 @@ class MainApp:
         self.page.update()
 
     def show_strategy(self):
-        self.content.content = StrategyView()
+        self.content.content = StrategyView(self.repos)
         self.page.update()
 
     def show_tracks(self):
@@ -117,51 +117,133 @@ class MainApp:
 
 def seed_database(repos: Repositories):
 
-    if not repos.classes.exists("Hypercar"):
-        repos.classes.add(
-            CarClass(
-                id=None,
-                name="Hypercar"
+    def seed_classes():
+        if not repos.classes.exists("Hypercar"):
+            repos.classes.add(
+                CarClass(
+                    id=None,
+                    name="Hypercar"
+                )
             )
-        )
 
-    if not repos.classes.exists("LMGT3"):
-        repos.classes.add(
-            CarClass(
-                id=None,
-                name="LMGT3"
+        if not repos.classes.exists("LMGT3"):
+            repos.classes.add(
+                CarClass(
+                    id=None,
+                    name="LMGT3"
+                )
             )
-        )
 
-    if not repos.classes.exists("LMP3"):
-        repos.classes.add(
-            CarClass(
-                id=None,
-                name="LMP3"
+        if not repos.classes.exists("LMP3"):
+            repos.classes.add(
+                CarClass(
+                    id=None,
+                    name="LMP3"
+                )
             )
-        )
 
-    if not repos.classes.exists("LMP2 (WEC)"):
-        repos.classes.add(
-            CarClass(
-                id=None,
-                name="LMP2 (WEC)"
+        if not repos.classes.exists("LMP2 (WEC)"):
+            repos.classes.add(
+                CarClass(
+                    id=None,
+                    name="LMP2 (WEC)"
+                )
             )
-        )
-    if not repos.classes.exists("LMP2 (ELMS)"):
-        repos.classes.add(
-            CarClass(
-                id=None,
-                name="LMP2 (ELMS)"
+        if not repos.classes.exists("LMP2 (ELMS)"):
+            repos.classes.add(
+                CarClass(
+                    id=None,
+                    name="LMP2 (ELMS)"
+                )
             )
-        )
-    if not repos.classes.exists("LMGTE"):
-        repos.classes.add(
-            CarClass(
-                id=None,
-                name="LMGTE"
+        if not repos.classes.exists("LMGTE"):
+            repos.classes.add(
+                CarClass(
+                    id=None,
+                    name="LMGTE"
+                )
             )
-        )
+    seed_classes()
+
+    def seed_cars():
+        hypercars=["Ferrari 499P", "Toyota GR010/TR010 Hybrid", "Porsche 963", "Genesis GMR-001", "Peugeot 9X8 2024", "Peugeot 9X8 Wingless","Isotta Fraschini Tipo","AMR Valkyrie LMH","Cadillac V-Series.R", "Alpine A424","Lamborghini SC63","BMW M Hybrid V8 EVO","Glickenhaus SGC 007"]
+        class_id = repos.classes.get_by_name("Hypercar").id
+        for carname in hypercars:
+            if not repos.car.exists(carname):
+                repos.car.add(
+                    Car(
+                        id=None,
+                        name=carname,
+                        carclass_id = class_id,
+                        fuel_capacity = 110,
+                        ve=True
+                    )
+                )
+        carname="Oreca 07 Gibson ELMS"
+        class_id = repos.classes.get_by_name("LMP2 (ELMS)").id
+        if not repos.car.exists(carname):
+            repos.car.add(
+                Car(
+                    id=None,
+                    name=carname,
+                    carclass_id = class_id,
+                    fuel_capacity = 75,
+                    ve=False
+                )
+            )
+
+        carname="Oreca 07 Gibson 2024"
+        class_id = repos.classes.get_by_name("LMP2 (WEC)").id
+        if not repos.car.exists(carname):
+            repos.car.add(
+                Car(
+                    id=None,
+                    name=carname,
+                    carclass_id = class_id,
+                    fuel_capacity = 63,
+                    ve=False
+                )
+            )
+        lmp3s=["Ligier JS P325 LMP3","Duqueine D09 LMP3","Ginetta G61 P325 LMP3","Adess AD25 LMP3"]
+        class_id = repos.classes.get_by_name("LMP3").id
+        for carname in lmp3s:
+            if not repos.car.exists(carname):
+                        repos.car.add(
+                            Car(
+                                id=None,
+                                name=carname,
+                                carclass_id = class_id,
+                                fuel_capacity = 100,
+                                ve=False
+                            )
+                        )
+        gt3s=["Porsche 992 LMGT3 EVO","Mercedes AMG LMGT3","Huracan EVO2 LMGT3","Lexus RC-F LMGT3","AMR Vantage LMGT3","Ford Mustang LMGT3 EVO","Ferrari 296 LMGT3 EVO","McLaren 720s LMGT3 EVO","Corvette Z06 LMGT3","BMW M4 LMGT3"]
+        class_id = repos.classes.get_by_name("LMGT3").id
+        for carname in gt3s:
+            if not repos.car.exists(carname):
+                        repos.car.add(
+                            Car(
+                                id=None,
+                                name=carname,
+                                carclass_id = class_id,
+                                fuel_capacity = 120,
+                                ve=True
+                            )
+                        )
+        class_id = repos.classes.get_by_name("LMGTE").id
+        gtes={"Porsche 911 RSR GTE":100,"Ferrari 488 GTE EVO":86,"Corvette C8.R GTE":91,"Aston Martin Vantage AMR GTE":97}
+        for carname, capacity in gtes.items():
+            if not repos.car.exists(carname):
+                        repos.car.add(
+                            Car(
+                                id=None,
+                                name=carname,
+                                carclass_id = class_id,
+                                fuel_capacity = capacity,
+                                ve=False
+                            )
+                        )
+    seed_cars()
 
 
 def main(page: ft.Page):
