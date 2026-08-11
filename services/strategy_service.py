@@ -42,6 +42,14 @@ class StrategyService:
             laps = math.ceil(laps_raw)
             return laps
 
+    def get_qual_laps(self, strategy: Strategy) -> int:
+        laptime = self.get_laptime(strategy)
+        length = strategy.qual_minutes
+        length_seconds = length*60
+        laps_raw = length_seconds / laptime
+        laps = math.ceil(laps_raw)
+        return laps
+
     def get_fuel_usage(self, strategy: Strategy) -> float:
         car_id = strategy.car_id
         track_id = strategy.track_id
@@ -178,8 +186,7 @@ class StrategyService:
         laps_cap = self.get_fuel_stint_laps(strategy)
         if stint_length > laps_cap:
             return capacity/stint_length
-        return self.get_fuel_usage(strategy)
-        
+        return self.get_fuel_usage(strategy)        
 
     def get_stint_ve_usage(self, strategy: Strategy, stint_length: int) -> float | None:
         capacity = 100
@@ -194,17 +201,18 @@ class StrategyService:
     def build_stints(self, strategy: Strategy, stint_lengths: list[int], target_stint_length: int | None = None) -> list[Stint]:
         stints=[]
         laptime = self.get_laptime(strategy)
+        laps_done = 0
         for i, laps in enumerate(stint_lengths, start=1):
             target_length = target_stint_length if target_stint_length is not None else laps
 
             fuel_usage = self.get_stint_fuel_usage(strategy, target_length)
             fuel_capacity = self.get_fuel_capacity(strategy)
-            fuel = min(laps * fuel_usage, fuel_capacity)
+            fuel = math.ceil(min(laps * fuel_usage, fuel_capacity))
             fuel_usage_real = fuel/laps
 
             ve_usage = self.get_stint_ve_usage(strategy, target_length)
             if ve_usage is not None:
-                ve = min(laps * ve_usage, 100)
+                ve = math.ceil(min(laps * ve_usage, 100))
                 ve_usage_real = ve/laps
                 fr = fuel/ve
             else:
@@ -213,12 +221,16 @@ class StrategyService:
 
             #Placeholder
             tirechange = TireChange(changed_wheels=set(), compound=None, new_tires=None)
-            
+
+            start_lap = laps_done+1
+            laps_done += laps
 
             stints.append(
                 Stint(
                     stint_number=i,
                     laps = laps,
+                    start_lap=start_lap,
+                    laps_done = laps_done,
                     fuel_per_lap = fuel_usage_real,
                     fuel_used = fuel,
                     ve_per_lap = ve_usage_real,
@@ -234,6 +246,7 @@ class StrategyService:
         target_length = math.floor(self.get_limiting_stint_laps(strategy))
         stint_lengths = self.build_push_stint_lengths(strategy)
         race_laps = self.get_race_laps(strategy)
+        make_home = race_laps - target_length
 
         stints = self.build_stints(
             strategy=strategy,
@@ -243,6 +256,7 @@ class StrategyService:
         return RacePlan(
             race_laps = race_laps,
             pit_stops = len(stints) - 1,
+            make_home_lap=make_home,
             stints = stints
         )
 
@@ -250,6 +264,7 @@ class StrategyService:
         target_length = math.floor(self.get_limiting_stint_laps(strategy))+1
         stint_lengths = self.build_plus_stint_lengths(strategy)
         race_laps = self.get_race_laps(strategy)
+        make_home = race_laps - (target_length-1)
 
         stints = self.build_stints(
             strategy=strategy,
@@ -259,28 +274,50 @@ class StrategyService:
         return RacePlan(
             race_laps = race_laps,
             pit_stops = len(stints) - 1,
+            make_home_lap=make_home,
             stints = stints
         )
 
     def build_save_plan(self, strategy: Strategy) -> RacePlan | None:
-                stint_lengths = self.build_save_stint_lengths(strategy)
-                race_laps = self.get_race_laps(strategy)
+        stint_lengths = self.build_save_stint_lengths(strategy)
+        race_laps = self.get_race_laps(strategy)
+        push_stint = math.floor(self.get_limiting_stint_laps(strategy))
+        make_home = race_laps - push_stint
 
-                if stint_lengths is None:
-                    return None
-        
-                stints = self.build_stints(
-                    strategy=strategy,
-                    stint_lengths=stint_lengths
-                )
-                return RacePlan(
-                    race_laps = race_laps,
-                    pit_stops = len(stints)-1,
-                    stints = stints
-                )
+        if stint_lengths is None:
+            return None
+
+        stints = self.build_stints(
+            strategy=strategy,
+            stint_lengths=stint_lengths
+        )
+        return RacePlan(
+            race_laps = race_laps,
+            pit_stops = len(stints)-1,
+            make_home_lap=make_home,
+            stints = stints
+        )
+
+    def build_quali_plan(self, strategy: Strategy) -> QualiPlan:
+        qual_laps = self.get_qual_laps(strategy)
+        fuel_usage = self.get_fuel_usage(strategy)+0.2
+        fuel_needed = math.ceil(fuel_usage * qual_laps)
+        car = self.car_repo.get_by_id(strategy.car_id)
+        if car.ve:
+            fuel_ratio = fuel_needed/100
+        else:
+            fuel_ratio=None
+
+        return QualiPlan(
+            fuel_needed=fuel_needed,
+            fuel_usage = fuel_usage,
+            fuel_ratio=fuel_ratio,
+            laps=qual_laps
+        )
 
     def calculate(self, strategy: Strategy) -> StrategyResult:
         return StrategyResult(
+            quali_plan=self.build_quali_plan(strategy),
             push_plan = self.build_push_plan(strategy),
             plus_one_plan = self.build_plus_plan(strategy),
             save_plan = self.build_save_plan(strategy)

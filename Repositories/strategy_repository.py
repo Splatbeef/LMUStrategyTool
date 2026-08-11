@@ -12,15 +12,42 @@ class StrategyRepository:
 
             cursor.execute(
                 """
-                INSERT INTO strategies (name, track_id, car_id, race_minutes, laptime_override, laps_override, usage_multiplier, fuel_capacity_override, ve_capacity_override)
+                INSERT INTO strategies (name, track_id, car_id, race_minutes, qual_minutes, laptime_override, laps_override, usage_multiplier, fuel_capacity_override, ve_capacity_override, tire_limit)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
-                (strat.name, strat.track_id, strat.car_id, strat.race_minutes, strat.laptime_override, strat.laps_override, strat.usage_multiplier, strat.fuel_capacity_override, strat.ve_capacity_override)
+                (strat.name, strat.track_id, strat.car_id, strat.race_minutes, strat.qual_minutes, strat.laptime_override, strat.laps_override, strat.usage_multiplier, strat.fuel_capacity_override, strat.ve_capacity_override, strat.tire_limit)
             )
 
             conn.commit()
 
             return cursor.lastrowid
+    # def get_all(self) -> list[Strategy]:
+    #     with self.db.get_connection() as conn:
+    #         cursor = conn.cursor()
+
+    #         rows = cursor.execute(
+    #             """
+    #             SELECT id, name, track_id, car_id, race_minutes, laptime_override, laps_override, usage_multiplier, fuel_capacity_override, ve_capacity_override
+    #             FROM strategies
+    #             ORDER BY name
+    #             """
+    #         ).fetchall()
+
+    #     return [
+    #         Strategy(
+    #             id=row[0],
+    #             name=row[1],
+    #             track_id = row[2], 
+    #             car_id = row[3],
+    #             race_minutes = row[4],
+    #             laptime_override = row[5], 
+    #             laps_override = row[6], 
+    #             usage_multiplier = row[7], 
+    #             fuel_capacity_override = row[8], 
+    #             ve_capacity_override = row[9]
+    #         )
+    #         for row in rows
+    #     ]
 
     def get_all(self) -> list[Strategy]:
         with self.db.get_connection() as conn:
@@ -28,7 +55,7 @@ class StrategyRepository:
 
             rows = cursor.execute(
                 """
-                SELECT id, name, track_id, car_id, race_minutes, laptime_override, laps_override, usage_multiplier, fuel_capacity_override, ve_capacity_override
+                SELECT id, name, track_id, car_id, race_minutes, qual_minutes, laptime_override, laps_override, usage_multiplier, fuel_capacity_override, ve_capacity_override, tire_limit
                 FROM strategies
                 ORDER BY name
                 """
@@ -40,12 +67,14 @@ class StrategyRepository:
                 name=row[1],
                 track_id = row[2], 
                 car_id = row[3],
-                race_minutes = row[4], 
-                laptime_override = row[5], 
-                laps_override = row[6], 
-                usage_multiplier = row[7], 
-                fuel_capacity_override = row[8], 
-                ve_capacity_override = row[9]
+                race_minutes = row[4],
+                qual_minutes = row[5], 
+                laptime_override = row[6], 
+                laps_override = row[7], 
+                usage_multiplier = row[8], 
+                fuel_capacity_override = row[9], 
+                ve_capacity_override = row[10],
+                tire_limit=row[11]
             )
             for row in rows
         ]
@@ -56,7 +85,7 @@ class StrategyRepository:
 
             row = cursor.execute(
                 """
-                SELECT id, name, track_id, car_id, race_minutes, laptime_override, laps_override, usage_multiplier, fuel_capacity_override, ve_capacity_override
+                SELECT id, name, track_id, car_id, race_minutes, qual_minutes, laptime_override, laps_override, usage_multiplier, fuel_capacity_override, ve_capacity_override, tire_limit
                 FROM cars
                 WHERE id = ?
                 """,
@@ -71,12 +100,14 @@ class StrategyRepository:
                         name=row[1],
                         track_id = row[2], 
                         car_id = row[3],
-                        race_minutes = row[4], 
-                        laptime_override = row[5], 
-                        laps_override = row[6], 
-                        usage_multiplier = row[7], 
-                        fuel_capacity_override = row[8], 
-                        ve_capacity_override = row[9]
+                        race_minutes = row[4],
+                        qual_minutes = row[5], 
+                        laptime_override = row[6], 
+                        laps_override = row[7], 
+                        usage_multiplier = row[8], 
+                        fuel_capacity_override = row[9], 
+                        ve_capacity_override = row[10],
+                        tire_limit=row[11]
                     )
 
     def update(self, strat: Strategy) -> None:
@@ -90,22 +121,26 @@ class StrategyRepository:
                     track_id = ?, 
                     car_id = ?,
                     race_minutes = ?, 
+                    qual_minutes = ?,
                     laptime_override = ?, 
                     laps_override = ?, 
                     usage_multiplier = ?, 
                     fuel_capacity_override = ?, 
-                    ve_capacity_override = ?
+                    ve_capacity_override = ?,
+                    tire_limit = ?
                 WHERE id = ?
                 """,
                 (strat.name, 
                  strat.track_id, 
                  strat.car_id, 
-                 strat.race_minutes, 
+                 strat.race_minutes,
+                 strat.qual_minutes, 
                  strat.laptime_override, 
                  strat.laps_override, 
                  strat.usage_multiplier, 
                  strat.fuel_capacity_override, 
-                 strat.ve_capacity_override, 
+                 strat.ve_capacity_override,
+                 strat.tire_limit, 
                  strat.id))
             conn.commit()
 
@@ -145,7 +180,7 @@ class StrategyRepository:
 
             row = cursor.execute(
                 """
-                SELECT id, name, track_id, car_id, race_minutes, laptime_override, laps_override, usage_multiplier, fuel_capacity_override, ve_capacity_override
+                SELECT id, name, track_id, car_id, race_minutes, qual_minutes, laptime_override, laps_override, usage_multiplier, fuel_capacity_override, ve_capacity_override, tire_limit
                 FROM strategies
                 WHERE name = ?
                 """,
@@ -153,14 +188,16 @@ class StrategyRepository:
             ).fetchone()
 
         return Strategy(
-                            id=row[0],
-                            name=row[1],
-                            track_id = row[2], 
-                            car_id = row[3],
-                            race_minutes = row[4], 
-                            laptime_override = row[5], 
-                            laps_override = row[6], 
-                            usage_multiplier = row[7], 
-                            fuel_capacity_override = row[8], 
-                            ve_capacity_override = row[9]
-            )
+                        id=row[0],
+                        name=row[1],
+                        track_id = row[2], 
+                        car_id = row[3],
+                        race_minutes = row[4],
+                        qual_minutes = row[5], 
+                        laptime_override = row[6], 
+                        laps_override = row[7], 
+                        usage_multiplier = row[8], 
+                        fuel_capacity_override = row[9], 
+                        ve_capacity_override = row[10],
+                        tire_limit=row[11]
+                    )

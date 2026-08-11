@@ -93,6 +93,16 @@ class StrategyView(ft.Container):
             value="" if strategy is None else str(strategy.race_minutes)
         )
 
+        self.qual_minutes = ft.TextField(
+            label="Qualifying Length (minutes)",
+            value="" if strategy is None else str(strategy.qual_minutes)
+        )
+
+        self.tire_limit = ft.TextField(
+            label="Tire Limit",
+            value="" if strategy is None else str(strategy.tire_limit)
+        )
+
         self.multiplier = ft.TextField(
             label="Fuel Usage Multiplier",
             value="1" if strategy is None else str(strategy.usage_multiplier)
@@ -145,14 +155,16 @@ class StrategyView(ft.Container):
 
             ft.Row([
                 ft.Column([
-                        self.strategy_name,
-                        self.race_minutes,
-                    ]),
+                    self.strategy_name,
+                    self.race_minutes,
+                    self.qual_minutes
+                ]),
                 ft.Column([
                     self.track_dropdown,
                     self.car_dropdown
                 ]),
                 ft.Column([
+                    self.tire_limit,
                     self.multiplier,
                     self.fuel_capacity
                 ]),

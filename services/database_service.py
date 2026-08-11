@@ -93,11 +93,13 @@ class DatabaseService:
                     track_id INTEGER NOT NULL,
                     car_id INTEGER NOT NULL,
                     race_minutes INTEGER NOT NULL,
+                    qual_minutes INTEGER NOT NULL,
                     laptime_override REAL,
                     laps_override INTEGER,
                     usage_multiplier INTEGER,
                     fuel_capacity_override INTEGER,
                     ve_capacity_override INTEGER,
+                    tire_limit INTEGER,
                     FOREIGN KEY (car_id) REFERENCES cars(id),
                     FOREIGN KEY (track_id) REFERENCES tracks(id)
                 )

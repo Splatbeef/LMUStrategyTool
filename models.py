@@ -26,11 +26,13 @@ class Strategy:
     track_id: int
     car_id: int
     race_minutes: int
+    qual_minutes: int
     laptime_override: float | None
     laps_override: int | None
     usage_multiplier: int
     fuel_capacity_override: int | None
     ve_capacity_override: int | None
+    tire_limit: int | None
 
 @dataclass
 class TireChange:
@@ -42,10 +44,12 @@ class TireChange:
 class Stint:
     stint_number: int
     laps: int
+    start_lap: int
+    end_lap: int
     fuel_per_lap: float
-    fuel_used: float
+    fuel_used: int
     ve_per_lap: float | None
-    ve_used: float | None
+    ve_used: int | None
     stint_time: float
     tire_change: TireChange
     fuel_ratio = float | None
@@ -54,10 +58,19 @@ class Stint:
 class RacePlan:
     race_laps: int
     pit_stops: int
+    make_home_lap: int | None #Pitting at the end of this lap for full tank will get you home
     stints: list[Stint]
 
 @dataclass
+class QualiPlan:
+    fuel_needed: int
+    fuel_usage: float
+    fuel_ratio: float | None
+    laps: int
+
+@dataclass
 class StrategyResult:
+    quali_plan: QualiPlan
     push_plan: RacePlan
     plus_one_plan: RacePlan
     save_plan: RacePlan | None
