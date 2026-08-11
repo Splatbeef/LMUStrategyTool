@@ -166,7 +166,8 @@ def seed_database(repos: Repositories):
     seed_classes()
 
     def seed_cars():
-        hypercars=["Ferrari 499P", "Toyota GR010/TR010 Hybrid", "Porsche 963", "Genesis GMR-001", "Peugeot 9X8 2024", "Peugeot 9X8 Wingless","Isotta Fraschini Tipo","AMR Valkyrie LMH","Cadillac V-Series.R", "Alpine A424","Lamborghini SC63","BMW M Hybrid V8 EVO","Glickenhaus SGC 007"]
+        
+        hypercars=["Ferrari 499P", "Toyota GR010", "Porsche 963", "Genesis GMR001", "Peugeot 9X8 EVO", "Peugeot 9X8","Isotta Fraschini Tipo 6","AMR Valkyrie LMH","Cadillac V Series.R", "Alpine A424","Lamborghini SC63","BMW M Hybrid V8 EVO","Glickenhaus SGC 007"]
         class_id = repos.classes.get_by_name("Hypercar").id
         for carname in hypercars:
             if not repos.car.exists(carname):

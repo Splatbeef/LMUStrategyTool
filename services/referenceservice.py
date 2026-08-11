@@ -3,40 +3,48 @@ import pandas as pd
 import numpy as np
 import datetime as dt
 import math
+import requests
+
+from Repositories.car_repository import CarRepository
+from Repositories.carclass_repository import CarClassRepository
+from Repositories.referencetime_repository import ReferenceTimeRepository
+from Repositories.track_repository import TrackRepository
 
 
 
 class ReferenceService:
-    def __init__(self, track_repo, car_repo, reference_repo):
-        SHEET_ID = "1uNX-PRtZSxjo6jM848tyLuHawBk0FzWNpVqo9WDYpDI"
-        GID = "2029862573"
-        self.url = (
-            f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/export"
-            f"?format=csv&gid={GID}"
-        )
+    def __init__(self, track_repo: TrackRepository, car_repo: CarRepository, reference_repo: ReferenceTimeRepository):
+        self.url = "https://gosetups.gg/wp-json/gosetups/v1/laptimes"
         self.track_repo = track_repo
         self.car_repo = car_repo
         self.reference_repo = reference_repo
 
     def sync(self):
-        df = self.load_lmu_laptimes()
+        response = requests.get(self.url, timeout=30)
+        response.raise_for_status()
 
-        cars_all = list(df)[1:]
-        cars={}
-        for c in cars_all:
-            if self.car_repo.exists(c):
-                car = self.car_repo.get_by_name(c)
-                cars[c]=car
+        data = response.json()
+        lmu_rows = [
+        row
+        for row in data["laptimes"]
+        if row["game"] == "lmu"
+        ]
 
-
-        for name, row in df.iterrows():
-            tracktype = row["TrackType"]
-            if tracktype == "Track":
-                trackname = name
-                layout=""
+        for row in lmu_rows:
+            car_name = row["car_name"]
+            if self.car_repo.exists(car_name):
+                car=self.car_repo.get_by_name(car_name)
             else:
-                trackname, layout = self.find_name_layout(name)
+                continue
 
+            track_name = row["track_name"]
+            aliases = self.aliases()
+            if track_name in aliases:
+                trackname, layout = aliases[track_name]
+            else:
+                raise ValueError(f"Unknown track: {track_name}")
+
+                
             if not self.track_repo.exists(trackname, layout):
                 track = Track(
                     id=None,
@@ -46,35 +54,34 @@ class ReferenceService:
                 self.track_repo.add(track)
             track = self.track_repo.get_by_name_layout(trackname, layout)
 
-            for carname, car in cars.items():
-                laptimestr = row[carname]
-                laptime = self.parse_laptime(laptimestr)
-                if laptime is None:
-                    continue
-                class_id = car.carclass_id
+            laptime_ms = row["laptime_ms"]
+            if laptime_ms is None:
+                continue
+            laptime = laptime_ms/100
+            class_id = car.carclass_id
 
-                if self.reference_repo.exists(track.id, class_id):
-                    best = self.reference_repo.get_best_reference(track.id, class_id)
-                    if laptime < best.laptime:
-                        newlaptime = ReferenceTime(
-                            id = best.id,
-                            track_id = track.id,
-                            carclass_id = class_id,
-                            laptime = laptime,
-                            date_set = dt.date.today(),
-                            source="GO Setups"
-                        )
-                        self.reference_repo.update(newlaptime)
-                else:
+            if self.reference_repo.exists(track.id, class_id):
+                best = self.reference_repo.get_best_reference(track.id, class_id)
+                if laptime < best.laptime:
                     newlaptime = ReferenceTime(
-                            id = None,
-                            track_id = track.id,
-                            carclass_id = class_id,
-                            laptime = laptime,
-                            date_set = dt.date.today(),
-                            source="GO Setups"
-                        )
-                    self.reference_repo.add(newlaptime)
+                        id = best.id,
+                        track_id = track.id,
+                        carclass_id = class_id,
+                        laptime = laptime,
+                        date_set = dt.date.today(),
+                        source="GO Setups"
+                    )
+                    self.reference_repo.update(newlaptime)
+            else:
+                newlaptime = ReferenceTime(
+                        id = None,
+                        track_id = track.id,
+                        carclass_id = class_id,
+                        laptime = laptime,
+                        date_set = dt.date.today(),
+                        source="GO Setups"
+                    )
+                self.reference_repo.add(newlaptime)
 
     def parse_laptime(self, time) -> float:
         if pd.isna(time):
@@ -102,8 +109,7 @@ class ReferenceService:
             return f"{laptime:.3f}"
         minutes = math.floor(laptime/60)
         seconds = laptime % 60
-        return f"{minutes}:{seconds:06.3f}"
-        
+        return f"{minutes}:{seconds:06.3f}"   
 
     def find_name_layout(self, name: str):
         splitname = name.split(" ")
@@ -215,3 +221,36 @@ class ReferenceService:
         df_laptimes = df_laptimes.set_index("Track")
 
         return df_laptimes
+
+    def aliases(self):
+        return {'Silverstone International': ("Silverstone", "International"),
+ 'Monza Curva Grande': ("Monza", "Curva Grande"),
+ 'Laguna Seca': ("Laguna Seca", ""),
+ 'Le Mans Mulsanne': ("Le Mans","Mulsanne"),
+ 'Silverstone National': ("Silverstone","National"),
+ 'Barcelona': ("Barcelona",""),
+ 'Interlagos': ("Interlagos",""),
+ 'Bahrain International': ("Bahrain",""),
+ 'Spa Francorchamps': ("Spa-Francorchamps",""),
+ 'Paul Ricard ELMS': ("Paul Ricard",""),
+ 'Bahrain Outer': ("Bahrain","Outer"),
+ 'Fuji Classic': ("Fuji","Classic"),
+ 'Bahrain Paddock': ("Bahrain","Paddock"),
+ 'Bahrain Endurance': ("Bahrain","Endurance"),
+ 'Silverstone WEC': ("Silverstone",""),
+ 'Paul Ricard 1A V2': ("Paul Ricard","1A-V2"),
+ 'Paul Ricard 1A': ("Paul Ricard","1A"),
+ 'Le Mans': ("Le Mans",""),
+ 'Monza': ("Monza",""),
+ 'Portimao': ("Portimao",""),
+ 'Paul Ricard 3A': ("Paul Ricard","3A"),
+ 'COTA': ("CotA",""),
+ 'Sebring': ("Sebring",""),
+ 'Qatar': ("Qatar",""),
+ 'Sebring School': ("Sebring","School"),
+ 'Imola': ("Imola",""),
+ 'Paul Ricard 1A V2 Short': ("Paul Ricard","1A-V2-Short"),
+ 'Daytona': ("Daytona",""),
+ 'COTA National': ("CotA","National"),
+ 'Qatar Short': ("Qatar","Short"),
+ 'Fuji': ("Fuji","")}

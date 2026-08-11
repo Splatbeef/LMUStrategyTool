@@ -21,33 +21,6 @@ class StrategyRepository:
             conn.commit()
 
             return cursor.lastrowid
-    # def get_all(self) -> list[Strategy]:
-    #     with self.db.get_connection() as conn:
-    #         cursor = conn.cursor()
-
-    #         rows = cursor.execute(
-    #             """
-    #             SELECT id, name, track_id, car_id, race_minutes, laptime_override, laps_override, usage_multiplier, fuel_capacity_override, ve_capacity_override
-    #             FROM strategies
-    #             ORDER BY name
-    #             """
-    #         ).fetchall()
-
-    #     return [
-    #         Strategy(
-    #             id=row[0],
-    #             name=row[1],
-    #             track_id = row[2], 
-    #             car_id = row[3],
-    #             race_minutes = row[4],
-    #             laptime_override = row[5], 
-    #             laps_override = row[6], 
-    #             usage_multiplier = row[7], 
-    #             fuel_capacity_override = row[8], 
-    #             ve_capacity_override = row[9]
-    #         )
-    #         for row in rows
-    #     ]
 
     def get_all(self) -> list[Strategy]:
         with self.db.get_connection() as conn:
