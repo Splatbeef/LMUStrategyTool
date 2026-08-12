@@ -188,7 +188,7 @@ class ReferenceTimeRepository:
         self,
         track_id: int,
         carclass_id: int
-    ) -> list:
+    ) -> list[ReferenceTime]:
         with self.db.get_connection() as conn:
             cursor = conn.cursor()
 

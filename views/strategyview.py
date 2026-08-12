@@ -2,6 +2,7 @@ import flet as ft
 from Repositories.repositories import *
 from models import *
 from services.strategy_service import *
+from services.referenceservice import *
 
 class StrategyView(ft.Container):
     def __init__(self, repos: Repositories):
@@ -11,7 +12,9 @@ class StrategyView(ft.Container):
         self.track_repo = repos.track
         self.class_repo = repos.classes
         self.fuel_repo = repos.fuel
+        self.reference_repo = repos.reference
         self.stratservice = StrategyService(repos)
+        self.referenceservice = ReferenceService(repos.track, repos.car, repos.reference, repos.trackalias, repos.caralias)
 
         self.content_area = ft.Container(expand=True)
 
@@ -239,6 +242,14 @@ class StrategyView(ft.Container):
             )
         )
 
+    def get_laptimes(self, strategy: Strategy):
+        carclass_id = self.car_repo.get_by_id(strategy.car_id).carclass_id
+        reference = self.reference_repo.get_best_reference(strategy.track_id, carclass_id)
+        reference_str = self.referenceservice.text_from_laptime(reference.laptime)
+        self.details.controls.append(ft.Text(f"Reference Time: {reference_str}"))
+        #Return a column instead? Or list of controls
+        
+
     def load_cars(self):
         self.car_dropdown.options = []
 
@@ -412,6 +423,7 @@ class StrategyView(ft.Container):
 
         details=[]
         details.append(ft.Text("Laptimes",size=20,weight=ft.FontWeight.BOLD))
+        self.get_laptimes(self.current_strategy)
         #Reference Lap
         #PBs
         details.append(ft.Divider())
@@ -494,5 +506,4 @@ class StrategyView(ft.Container):
         if value is None or value.strip() == "":
             return None
         return int(value)
-
     
