@@ -101,3 +101,17 @@ class FuelUsage:
     track_id: int
     fuel_usage: float
     ve_usage: float | None
+
+@dataclass
+class TrackAlias:
+    id: int | None
+    alias: str
+    name: str
+    layout: str
+
+@dataclass
+class CarAlias:
+    id: int | None
+    alias: str
+    name: str
+

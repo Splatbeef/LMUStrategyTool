@@ -6,14 +6,16 @@ from Repositories.referencetime_repository import ReferenceTimeRepository
 from Repositories.car_repository import CarRepository
 from Repositories.carclass_repository import CarClassRepository
 from Repositories.track_repository import TrackRepository
+from Repositories.alias_repository import *
 from services.referenceservice import *
 
 class ReferenceView(ft.Container):
-    def __init__(self, reference_repo: ReferenceTimeRepository, track_repo: TrackRepository, class_repo: CarClassRepository, car_repo: CarRepository):
+    def __init__(self, reference_repo: ReferenceTimeRepository, track_repo: TrackRepository, class_repo: CarClassRepository, car_repo: CarRepository, trackalias_repo: TrackAliasRepository, caralias_repo: CarAliasRepository):
         self.class_repo = class_repo
+        self.car_repo = car_repo
         self.track_repo = track_repo
         self.reference_repo = reference_repo
-        self.referenceservice = ReferenceService(track_repo, car_repo, reference_repo)
+        self.referenceservice = ReferenceService(track_repo, car_repo, reference_repo, trackalias_repo, caralias_repo)
 
         self.sync_button = ft.Button(content="Sync Laptimes", on_click=self.sync_clicked)
         self.clear_button = ft.Button(content="Clear Laptimes", on_click=self.clear_clicked)
@@ -48,7 +50,12 @@ class ReferenceView(ft.Container):
         )
 
     def sync_clicked(self, e):
-        self.referenceservice.sync()
+        missing = self.referenceservice.sync()
+        if missing["tracks"]:
+            self.show_track_alias_dialog(missing["tracks"])
+        if missing["cars"]:
+            self.show_car_alias_dialog(missing["cars"])
+            
         self.refresh_table()
         self.update()
 
@@ -56,8 +63,6 @@ class ReferenceView(ft.Container):
         self.reference_repo.clear()
         self.refresh_table()
         self.update()
-
-
 
     def refresh_table(self):
         times = self.reference_repo.get_all()
@@ -84,3 +89,157 @@ class ReferenceView(ft.Container):
                     ]
                 )
             )
+
+    def show_track_alias_dialog(
+    self,
+    missing_tracks: list,
+    ):
+        track_alias = missing_tracks[0]
+
+        track_dropdown = ft.Dropdown(
+            label="Select Existing Track",
+            options=[])
+        for t in self.track_repo.get_all():
+            if t.layout != "":
+                track_dropdown.options.append(ft.dropdown.Option(
+                    key=str(t.id),
+                    text=f"{t.name} ({t.layout})"
+                ))
+            else:
+                track_dropdown.options.append(ft.dropdown.Option(
+                    key=str(t.id),
+                    text=f"{t.name}"
+                ))
+
+        def save_alias(e):
+            if not track_dropdown.value:
+                return
+            track = self.track_repo.get_by_id(int(track_dropdown.value))
+            self.referenceservice.save_track_alias(track_alias, track.name, track.layout)
+            dialog.open=False
+            self.page.update()
+            show_next_track_alias()
+
+        save_button = ft.Button(content="Save Alias", on_click=save_alias)
+        
+        track_text = ft.TextField(label="Track name")
+        layout_text = ft.TextField(label="Layout")
+
+        def add_track(e):
+            if not track_text.value:
+                return
+            name = track_text.value
+            layout = layout_text.value
+            if not self.track_repo.exists(name, layout):
+                self.track_repo.add(Track(
+                    id = None,
+                    name = name,
+                    layout = layout
+                ))
+            self.referenceservice.save_track_alias(track_alias, name, layout)
+            dialog.open=False
+            self.page.update()
+            show_next_track_alias()
+            
+        add_button = ft.Button(content="Add Track", on_click=add_track)
+
+        def show_next_track_alias():
+            remaining=missing_tracks[1:]
+
+            if remaining:
+                self.show_track_alias_dialog(remaining)
+            else:
+                self.refresh_table()
+
+        dialog = ft.AlertDialog(
+            modal=True,
+            title=ft.Text("Add Track Alias"),
+            content=ft.Column([
+                ft.Text(f"Missing track for alias: {track_alias}"),
+                ft.Divider(),
+                ft.Text("Select Existing Track"),
+                track_dropdown,
+                save_button,
+                ft.Divider(),
+                ft.Text("Add New Track"),
+                ft.Row([
+                    track_text,
+                    layout_text,
+            ]),
+                add_button
+            ])
+        )
+
+        self.page.show_dialog(dialog)
+        self.page.update()
+
+    def show_car_alias_dialog(
+        self,
+        missing_cars: list,
+        ):
+            car_alias = missing_cars[0]
+    
+            car_dropdown = ft.Dropdown(
+                label="Select Existing Car",
+                options=[])
+            for c in sorted(self.car_repo.get_all(), key=lambda car: car.name.lower()):
+                car_dropdown.options.append(ft.dropdown.Option(
+                    key=str(c.id),
+                    text=f"{c.name}"
+                ))
+    
+            def save_alias(e):
+                if not car_dropdown.value:
+                    return
+                car = self.car_repo.get_by_id(int(car_dropdown.value))
+                self.referenceservice.save_car_alias(car_alias, car.name)
+                dialog.open=False
+                self.page.update()
+                show_next_car_alias()
+            save_button = ft.Button(content="Save Alias", on_click=save_alias)
+            
+            car_text = ft.TextField(label="Car name")
+    
+            def add_car(e):
+                if not car_text.value:
+                    return
+                name = car_text.value
+                if not self.car_repo.exists(name):
+                    self.car_repo.add(Car(
+                        id = None,
+                        name = name
+                    ))
+                self.referenceservice.save_car_alias(car_alias, name)
+                dialog.open=False
+                self.page.update()
+                show_next_car_alias()
+                
+            add_button = ft.Button(content="Add Car", on_click=add_car)
+    
+            def show_next_car_alias():
+                remaining = missing_cars[1:]
+
+                if remaining:
+                    self.show_car_alias_dialog(remaining)
+                else:
+                    self.refresh_table()
+    
+            dialog = ft.AlertDialog(
+                modal=True,
+                title=ft.Text("Add Car Alias"),
+                content=ft.Column([
+                    ft.Text(f"Missing car for alias: {car_alias}"),
+                    ft.Divider(),
+                    ft.Text("Select Existing Car"),
+                    car_dropdown,
+                    save_button,
+                    ft.Divider(),
+                    ft.Text("Add New Car"),
+                    car_text,
+                    add_button
+                ])
+            )
+            self.page.show_dialog(dialog)
+            self.page.update()
+
+

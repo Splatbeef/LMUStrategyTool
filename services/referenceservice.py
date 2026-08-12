@@ -9,15 +9,18 @@ from Repositories.car_repository import CarRepository
 from Repositories.carclass_repository import CarClassRepository
 from Repositories.referencetime_repository import ReferenceTimeRepository
 from Repositories.track_repository import TrackRepository
+from Repositories.alias_repository import *
 
 
 
 class ReferenceService:
-    def __init__(self, track_repo: TrackRepository, car_repo: CarRepository, reference_repo: ReferenceTimeRepository):
+    def __init__(self, track_repo: TrackRepository, car_repo: CarRepository, reference_repo: ReferenceTimeRepository, track_alias_repo: TrackAliasRepository, car_alias_repo: CarAliasRepository):
         self.url = "https://gosetups.gg/wp-json/gosetups/v1/laptimes"
         self.track_repo = track_repo
         self.car_repo = car_repo
         self.reference_repo = reference_repo
+        self.trackalias_repo = track_alias_repo
+        self.caralias_repo = car_alias_repo
 
     def sync(self):
         response = requests.get(self.url, timeout=30)
@@ -30,19 +33,27 @@ class ReferenceService:
         if row["game"] == "lmu"
         ]
 
+        missing_track_aliases=[]
+        missing_car_aliases=[]
         for row in lmu_rows:
             car_name = row["car_name"]
-            if self.car_repo.exists(car_name):
-                car=self.car_repo.get_by_name(car_name)
-            else:
+            alias = self.caralias_repo.get_by_alias(car_name)
+            if alias is None:
+                if car_name not in missing_car_aliases:
+                    missing_car_aliases.append(car_name)
                 continue
+            else:
+                car = self.car_repo.get_by_name(alias.name)
 
             track_name = row["track_name"]
-            aliases = self.aliases()
-            if track_name in aliases:
-                trackname, layout = aliases[track_name]
+            alias = self.trackalias_repo.get_by_alias(track_name)
+            if alias is None:
+                if track_name not in missing_track_aliases:
+                    missing_track_aliases.append(track_name)
+                continue
             else:
-                raise ValueError(f"Unknown track: {track_name}")
+                trackname = alias.name
+                layout = alias.layout
 
                 
             if not self.track_repo.exists(trackname, layout):
@@ -82,6 +93,10 @@ class ReferenceService:
                         source="GO Setups"
                     )
                 self.reference_repo.add(newlaptime)
+        return {
+            "tracks": sorted(missing_track_aliases),
+            "cars": sorted(missing_car_aliases)
+        }
 
     def parse_laptime(self, time) -> float:
         if pd.isna(time):
@@ -111,116 +126,22 @@ class ReferenceService:
         seconds = laptime % 60
         return f"{minutes}:{seconds:06.3f}"   
 
-    def find_name_layout(self, name: str):
-        splitname = name.split(" ")
-        constructed=""
-        layout=""
-        found=False
-        for txt in splitname:
-            if not found:
-                constructed+=f" {txt}"
-                constructed = constructed.strip()
-                if self.track_repo.track_exists(constructed):
-                    found=True
-                    trackname = constructed
-            else:
-                layout+=f" {txt}"
-                layout = layout.strip()
-        return trackname, layout
+    def save_track_alias(self, alias, name, layout):
+        self.trackalias_repo.add(
+            TrackAlias(
+                id = None,
+                alias = alias,
+                name = name,
+                layout = layout
+            ))
 
-    def load_lmu_laptimes(self):
-        # Load without treating any row as a header
-        raw = pd.read_csv(self.url, header=None)
-
-        # Find the row containing "TRACKS & CARS"
-        header_row = raw[
-            raw.apply(
-                lambda row: row.astype(str).str.contains("TRACKS & CARS", case=False, na=False).any(),
-                axis=1
-            )
-        ].index[0]
-
-        # Find the first row containing "Status", this marks the end of useful lap data
-        status_matches = raw[
-            raw.apply(
-                lambda row: row.astype(str).str.strip().eq("Status").any(),
-                axis=1
-            )
-        ]
-
-        if not status_matches.empty:
-            end_row = status_matches.index[0]
-        else:
-            end_row = len(raw)
-
-        # In this sheet, car names start after "TRACKS & CARS"
-        header_values = raw.iloc[header_row]
-
-        tracks_cars_col = header_values[
-            header_values.astype(str).str.contains("TRACKS & CARS", case=False, na=False)
-        ].index[0]
-
-        # Car names are every 3 columns after the TRACKS & CARS column:
-        # car name, empty, empty
-        # then rows below contain: game version, setup version, laptime
-        car_laptime_cols = {}
-
-        col = tracks_cars_col + 1
-
-        while col < raw.shape[1]:
-            car_name = raw.iloc[header_row, col]
-
-            if pd.notna(car_name) and str(car_name).strip():       
-                car_name = str(car_name).strip()
-                laptime_col = col + 2
-
-                if laptime_col < raw.shape[1]:
-                    car_laptime_cols[car_name] = laptime_col
-
-            col += 3
-
-        # Track names are usually in either of the two columns before the car data
-        possible_track_cols = {"Track": tracks_cars_col - 1, "Layout": tracks_cars_col}
-
-        records = []
-
-        for row_idx in range(header_row + 3, end_row):
-            row = raw.iloc[row_idx]
-
-            track = np.nan
-
-            for track_col, index in possible_track_cols.items():
-                if index >= 0:
-                    value = row.iloc[index]
-
-                    if pd.notna(value) and str(value).strip() != "":
-                        track = str(value).strip()
-                        tracktype = track_col
-                        break
-
-            if pd.isna(track):
-                continue
-
-            record = {"Track": track, "TrackType": tracktype}
-
-            for car_name, lap_col in car_laptime_cols.items():
-                value = row.iloc[lap_col]
-
-                if pd.isna(value) or str(value).strip() == "":
-                    record[car_name] = np.nan
-                else:
-                    record[car_name] = str(value).strip()
-
-            records.append(record)
-
-        df_laptimes = pd.DataFrame(records)
-
-        if df_laptimes.empty:
-            return df_laptimes
-
-        df_laptimes = df_laptimes.set_index("Track")
-
-        return df_laptimes
+    def save_car_alias(self, alias, name):
+        self.caralias_repo.add(
+            CarAlias(
+                id = None,
+                alias = alias,
+                name = name,
+            ))
 
     def aliases(self):
         return {'Silverstone International': ("Silverstone", "International"),

@@ -105,3 +105,20 @@ class DatabaseService:
                 )
             """)
 
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS track_aliases (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    alias TEXT NOT NULL UNIQUE,
+                    name TEXT NOT NULL,
+                    layout TEXT NOT NULL
+                )
+            """)
+
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS car_aliases (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    alias TEXT NOT NULL UNIQUE,
+                    name TEXT NOT NULL
+                )
+            """)
+

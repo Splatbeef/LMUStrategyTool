@@ -1,3 +1,8 @@
 import flet as ft
 
-print(ft.__version__)
+test = []
+
+if test:
+    print("Yes")
+else:
+    print("No")
