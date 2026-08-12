@@ -35,7 +35,11 @@ class TracksView(ft.Container):
                         weight=ft.FontWeight.BOLD
                     ),
                     ft.Row([
-                        self.tracks_table,
+                        ft.Column([
+                                self.tracks_table
+                            ],
+                            expand=True,
+                            scroll=ft.ScrollMode.AUTO),
                         # ft.Column([
                         #     self.name_field,
                         #     self.layout_field,
@@ -49,7 +53,8 @@ class TracksView(ft.Container):
                         #         self.delete_button
                         #     ]),
                         # ])
-                    ])                    
+                    ],
+                    expand=True)                    
                 ]
             )
         )

@@ -1,14 +1,15 @@
 import flet as ft
-from models import Car
+from models import Car, CarAlias
 from Repositories.car_repository import CarRepository
 from Repositories.carclass_repository import CarClassRepository
+from Repositories.alias_repository import CarAliasRepository
 
 
 class CarsView(ft.Container):
-    def __init__(self, car_repo: CarRepository, class_repo: CarClassRepository):
+    def __init__(self, car_repo: CarRepository, class_repo: CarClassRepository, caralias_repo: CarAliasRepository):
         self.car_repo = car_repo
         self.class_repo = class_repo
-
+        self.alias_repo = caralias_repo
         self.name_field = ft.TextField(label="Car Name")
         self.class_dropdown = ft.Dropdown(label="Class")
         self.fuel_capacity_field = ft.TextField(label="Fuel Tank Capacity")
@@ -42,7 +43,11 @@ class CarsView(ft.Container):
                         weight=ft.FontWeight.BOLD
                     ),
                     ft.Row([
-                        self.cars_table,
+                        ft.Column(
+                            controls=[self.cars_table],
+                            expand=True,
+                            scroll=ft.ScrollMode.AUTO
+                                  ),
                         ft.Column([
                             self.name_field,
                             self.class_dropdown,
@@ -58,7 +63,8 @@ class CarsView(ft.Container):
                                 self.delete_button
                             ]),
                         ])
-                    ])                    
+                    ],
+                    expand=True)                    
                 ]
             )
         )
@@ -113,8 +119,14 @@ class CarsView(ft.Container):
             fuel_capacity = float(self.fuel_capacity_field.value),
             ve=self.ve_checkbox.value
         )
+        alias = CarAlias(
+            id = None,
+            alias=self.name_field.value,
+            name=self.name_field.value
+        )
 
         self.car_repo.add(car)
+        self.alias_repo.add(alias)
 
         self.clear_form()
 
@@ -158,6 +170,16 @@ class CarsView(ft.Container):
             ),
             ve=self.ve_checkbox.value
         )
+        oldcar = self.car_repo.get_by_id(self.selected_car_id)
+        aliases = self.alias_repo.get_by_name(oldcar.name)
+        for a in aliases:
+            self.alias_repo.update(
+                CarAlias(
+                    id=a.id,
+                    alias=a.alias,
+                    name=self.name_field.value
+                )
+            )
 
         self.car_repo.update(car)
 

@@ -65,11 +65,15 @@ class StrategyView(ft.Container):
                 ft.Text("Strategies", size=28, weight=ft.FontWeight.BOLD),
                 ft.Button(content="New Strategy", on_click=lambda e: self.show_editor(None))
             ]),
-
-            self.strategy_table
+            ft.Row([
+                ft.Column([
+                        self.strategy_table
+                    ],
+                    expand=True,
+                    scroll=ft.ScrollMode.AUTO)
+            ],
+            expand=True)
         ])
-        # if self.page:
-        #     self.update()
 
     def show_editor(self, strategy:Strategy = None):
 

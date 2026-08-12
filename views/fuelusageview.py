@@ -47,7 +47,11 @@ class FuelUsageView(ft.Container):
                         weight=ft.FontWeight.BOLD
                     ),
                     ft.Row([
-                        self.usage_table,
+                        ft.Column([
+                            self.usage_table
+                        ],
+                        expand=True,
+                        scroll=ft.ScrollMode.AUTO),
                         ft.Column([
                             self.name_selected,
                             self.track_selected,
@@ -63,7 +67,8 @@ class FuelUsageView(ft.Container):
                                 self.delete_button
                             ]),
                         ])
-                    ])                    
+                    ],
+                    expand=True)                    
                 ]
             )
         )

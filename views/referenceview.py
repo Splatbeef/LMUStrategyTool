@@ -45,7 +45,14 @@ class ReferenceView(ft.Container):
                     self.clear_button
                 ]),
                 ft.Divider(),
-                self.times_table
+                ft.Row([
+                    ft.Column([
+                        self.times_table
+                    ],
+                    expand=True,
+                    scroll=ft.ScrollMode.AUTO)
+                ],
+                expand=True)
             ])
         )
 

@@ -272,3 +272,27 @@ class CarAliasRepository:
                 alias = row[1],
                 name=row[2]
             )
+
+    def get_by_name(self, name: str) -> list[CarAlias] | None:
+        with self.db.get_connection() as conn:
+            cursor = conn.cursor()
+
+            rows = cursor.execute(
+                """
+                SELECT id, alias, name
+                FROM car_aliases
+                WHERE LOWER(name) = LOWER(?)
+                LIMIT 1
+                """,
+                (name,)
+            ).fetchall()
+
+        if rows is None:
+                return None
+
+        return [CarAlias(
+                id=row[0],
+                alias = row[1],
+                name=row[2]
+            )
+            for row in rows]

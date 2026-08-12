@@ -104,7 +104,7 @@ class MainApp:
         self.page.update()
 
     def show_cars(self):
-        self.content.content = CarsView(self.repos.car, self.repos.classes)
+        self.content.content = CarsView(self.repos.car, self.repos.classes, self.repos.caralias)
         self.page.update()
 
     def show_fuel(self):
