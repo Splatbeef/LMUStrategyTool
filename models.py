@@ -71,6 +71,7 @@ class QualiPlan:
 
 @dataclass
 class StrategyResult:
+    race_laps: int
     quali_plan: QualiPlan
     raceplan_presets: list[RacePlan]
 

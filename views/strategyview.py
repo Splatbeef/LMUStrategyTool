@@ -146,10 +146,25 @@ class StrategyView(ft.Container):
             self.track_dropdown.value = str(self.current_strategy.track_id)
             self.car_dropdown.value = str(self.current_strategy.car_id)
 
-        self.plan_presets = ft.Column(
+        self.plan_presets = ft.Row(
             scroll=ft.ScrollMode.AUTO,
             expand=True
         )
+        self.details = ft.Column(expand=1, spacing=20)
+
+        self.bottomside=ft.Row([
+                self.details,
+                ft.VerticalDivider(),
+                ft.Column([
+                    ft.Text("Plan Presets",size=20,weight=ft.FontWeight.BOLD),
+                    self.plan_presets,
+                    # ft.Divider()
+                    # self.plan_builts
+                    ],
+                    expand=5)
+                ],
+                expand=True)
+                
 
 
         self.content_area.content = ft.Column([
@@ -198,19 +213,7 @@ class StrategyView(ft.Container):
 
             ft.Divider(),
 
-            ft.Row([
-                ft.Column([
-                    self.plan_presets
-                ],
-                expand=True,
-                scroll=ft.ScrollMode.AUTO),
-                # ft.Column([
-                #         self.plan_builts
-                #     ],
-                #     expand=True,
-                #     scroll=ft.ScrollMode.AUTO)
-            ],
-            expand=True)
+            self.bottomside
         ])
 
         if strategy is not None:
@@ -406,6 +409,23 @@ class StrategyView(ft.Container):
         self.plan_presets.controls=[]
         for plan in result.raceplan_presets:
             self.plan_presets.controls.append(self.create_plan_card(plan))
+
+        details=[]
+        details.append(ft.Text("Laptimes",size=20,weight=ft.FontWeight.BOLD))
+        #Reference Lap
+        #PBs
+        details.append(ft.Divider())
+        details.append(ft.Text("Qualifying",size=20,weight=ft.FontWeight.BOLD))
+        details.append(ft.Text(f"{result.quali_plan.laps} Laps"))
+        details.append(ft.Text(f"Fuel Usage: {result.quali_plan.fuel_usage}L per lap"))
+        details.append(ft.Text(f"Fuel Needed: {result.quali_plan.fuel_needed}L"))
+        if result.quali_plan.fuel_ratio is not None:
+            details.append(ft.Text(f"Fuel Ratio: {result.quali_plan.fuel_ratio} with 100% VE"))
+        details.append(ft.Divider())
+        details.append(ft.Text("Race",size=20,weight=ft.FontWeight.BOLD))
+        details.append(ft.Text(f"{result.race_laps} Laps"))
+        self.details.controls=details
+        
         self.update()
 
     def save_pressed(self, e):

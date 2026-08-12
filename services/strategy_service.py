@@ -320,6 +320,7 @@ class StrategyService:
         )
 
     def calculate(self, strategy: Strategy) -> StrategyResult:
+        race_laps = self.get_race_laps(strategy)
         qualplan = self.build_quali_plan(strategy)
         plans=[]
         plans.append(self.build_push_plan(strategy))
@@ -329,6 +330,7 @@ class StrategyService:
             plans.append(save_plan)
         
         return StrategyResult(
+            race_laps=race_laps,
             quali_plan=qualplan,
             raceplan_presets = plans
         )
