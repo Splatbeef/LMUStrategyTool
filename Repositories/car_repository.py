@@ -133,6 +133,7 @@ class CarRepository:
                 """,
                 (name,)
             ).fetchone()
+        print(name)
 
         return Car(
                 id=row[0],
