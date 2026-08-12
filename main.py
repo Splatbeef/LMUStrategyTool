@@ -167,7 +167,7 @@ def seed_database(repos: Repositories):
 
     def seed_cars():
         
-        hypercars=["Ferrari 499P", "Toyota GR010", "Porsche 963", "Genesis GMR001", "Peugeot 9X8 EVO", "Peugeot 9X8","Isotta Fraschini Tipo 6","AMR Valkyrie LMH","Cadillac V Series.R", "Alpine A424","Lamborghini SC63","BMW M Hybrid V8 EVO","Glickenhaus SCG 007","Vanwall Vandervell 680"]
+        hypercars=["Ferrari 499P", "Toyota GR010/TR010", "Porsche 963", "Genesis GMR001", "Peugeot 9X8 EVO", "Peugeot 9X8","Isotta Fraschini Tipo 6","Aston Martin Valkyrie LMH","Cadillac V-Series.R", "Alpine A424","Lamborghini SC63","BMW M Hybrid V8 EVO","Glickenhaus SCG 007","Vanwall Vandervell 680"]
         class_id = repos.classes.get_by_name("Hypercar").id
         for carname in hypercars:
             if not repos.car.exists(carname):
@@ -180,7 +180,7 @@ def seed_database(repos: Repositories):
                         ve=True
                     )
                 )
-        carname="Oreca 07 Gibson ELMS"
+        carname="Oreca 07 Gibson (ELMS)"
         class_id = repos.classes.get_by_name("LMP2 (ELMS)").id
         if not repos.car.exists(carname):
             repos.car.add(
@@ -193,7 +193,7 @@ def seed_database(repos: Repositories):
                 )
             )
 
-        carname="Oreca 07 Gibson 2024"
+        carname="Oreca 07 Gibson (WEC)"
         class_id = repos.classes.get_by_name("LMP2 (WEC)").id
         if not repos.car.exists(carname):
             repos.car.add(
@@ -205,7 +205,7 @@ def seed_database(repos: Repositories):
                     ve=False
                 )
             )
-        lmp3s=["Ligier JS P325 LMP3","Duqueine D09 LMP3","Ginetta G61 P325 LMP3","Adess AD25 LMP3"]
+        lmp3s=["Ligier JS P325","Duqueine D09","Ginetta-G61-LT-P325-Evo","Adess AD25"]
         class_id = repos.classes.get_by_name("LMP3").id
         for carname in lmp3s:
             if not repos.car.exists(carname):
@@ -218,7 +218,7 @@ def seed_database(repos: Repositories):
                                 ve=False
                             )
                         )
-        gt3s=["Porsche 992 LMGT3 EVO","Mercedes AMG LMGT3","Huracan EVO2 LMGT3","Lexus RC-F LMGT3","AMR Vantage LMGT3","Ford Mustang LMGT3 EVO","Ferrari 296 LMGT3 EVO","McLaren 720s LMGT3 EVO","Corvette Z06 LMGT3","BMW M4 LMGT3"]
+        gt3s=["Porsche 911 GT3 R LMGT3","Mercedes-AMG LMGT3","Lamborghini Huracan LMGT3 EVO2","Lexus RC-F LMGT3","Aston Martin Vantage AMR LMGT3","Ford Mustang LMGT3","Ferrari 296 LMGT3","McLaren 720s LMGT3 EVO","Chevrolet Corvette Z06 LMGT3.R","BMW M4 LMGT3"]
         class_id = repos.classes.get_by_name("LMGT3").id
         for carname in gt3s:
             if not repos.car.exists(carname):
@@ -232,7 +232,7 @@ def seed_database(repos: Repositories):
                             )
                         )
         class_id = repos.classes.get_by_name("LMGTE").id
-        gtes={"Porsche 911 RSR GTE":100,"Ferrari 488 GTE EVO":86,"Corvette C8.R GTE":91,"Aston Martin Vantage AMR GTE":97}
+        gtes={"Porsche 911 RSR-19 GTE":100,"Ferrari 488 GTE EVO":86,"Corvette C8.R GTE":91,"Aston Martin Vantage AMR GTE":97}
         for carname, capacity in gtes.items():
             if not repos.car.exists(carname):
                         repos.car.add(
@@ -419,7 +419,7 @@ def seed_database(repos: Repositories):
                     layout=layout
                 ))
     seed_track_aliases()
-    
+
 def main(page: ft.Page):
     page.title="LMU Strategy Tool"
 
