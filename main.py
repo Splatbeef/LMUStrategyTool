@@ -232,7 +232,7 @@ def seed_database(repos: Repositories):
                             )
                         )
         class_id = repos.classes.get_by_name("LMGTE").id
-        gtes={"Porsche 911 RSR-19 GTE":100,"Ferrari 488 GTE EVO":86,"Corvette C8.R GTE":91,"Aston Martin Vantage AMR GTE":97}
+        gtes={"Porsche 911 RSR-19 GTE":100,"Ferrari 488 GTE EVO":86,"Chevrolet Corvette C8.R GTE":91,"Aston Martin Vantage AMR GTE":97}
         for carname, capacity in gtes.items():
             if not repos.car.exists(carname):
                         repos.car.add(
@@ -247,7 +247,7 @@ def seed_database(repos: Repositories):
     seed_cars()
 
     def seed_car_aliases():
-        names=["Ferrari 499P", "Porsche 963", "Genesis GMR001", "Peugeot 9X8 EVO", "Peugeot 9X8","Isotta Fraschini Tipo 6", "Alpine A424","Lamborghini SC63","BMW M Hybrid V8 EVO","Glickenhaus SCG 007", "Vanwall Vandervell 680","Lexus RC-F LMGT3","McLaren 720s LMGT3 EVO","BMW M4 LMGT3","Ferrari 488 GTE EVO","Corvette C8.R GTE","Aston Martin Vantage AMR GTE"]
+        names=["Aston Martin Vantage AMR LMGT3", "Aston Martin Valkyrie LMH", "Ferrari 499P", "Porsche 963", "Genesis GMR001", "Peugeot 9X8 EVO", "Peugeot 9X8","Isotta Fraschini Tipo 6", "Alpine A424","Lamborghini SC63","BMW M Hybrid V8 EVO","Glickenhaus SCG 007", "Vanwall Vandervell 680","Lexus RC-F LMGT3","McLaren 720s LMGT3 EVO","BMW M4 LMGT3","Ferrari 488 GTE EVO","Chevrolet Corvette C8.R GTE","Aston Martin Vantage AMR GTE", "Ferrari 296 LMGT3", "Ford Mustang LMGT3"]
         for name in names:
             if not repos.caralias.exists(name):
                 repos.caralias.add(CarAlias(
@@ -255,6 +255,13 @@ def seed_database(repos: Repositories):
                     alias=name,
                     name=name
                 ))
+        name="BMW M Hybrid V8"
+        if not repos.caralias.exists(name):
+            repos.caralias.add(CarAlias(
+                id=None,
+                alias=name,
+                name="BMW M Hybrid V8 EVO"
+            ))
         name="Toyota GR010"
         if not repos.caralias.exists(name):
             repos.caralias.add(CarAlias(
@@ -283,7 +290,21 @@ def seed_database(repos: Repositories):
                 alias=name,
                 name="Oreca 07 Gibson (ELMS)"
             ))
+        name="Oreca 07 ELMS"
+        if not repos.caralias.exists(name):
+            repos.caralias.add(CarAlias(
+                id=None,
+                alias=name,
+                name="Oreca 07 Gibson (ELMS)"
+            ))
         name="Oreca 07 Gibson 2024"
+        if not repos.caralias.exists(name):
+            repos.caralias.add(CarAlias(
+                id=None,
+                alias=name,
+                name="Oreca 07 Gibson (WEC)"
+            ))
+        name="Oreca 07 2024"
         if not repos.caralias.exists(name):
             repos.caralias.add(CarAlias(
                 id=None,
@@ -297,6 +318,13 @@ def seed_database(repos: Repositories):
                 alias=name,
                 name="Ginetta G61-LT-P325-Evo"
             ))
+        name="Ginetta G61 LT P325 EVO"
+        if not repos.caralias.exists(name):
+            repos.caralias.add(CarAlias(
+                id=None,
+                alias=name,
+                name="Ginetta G61-LT-P325-Evo"
+            ))
         name="Ligier JS P325 LMP3"
         if not repos.caralias.exists(name):
             repos.caralias.add(CarAlias(
@@ -304,7 +332,7 @@ def seed_database(repos: Repositories):
                 alias=name,
                 name="Ligier JS P325"
             ))
-        name="Duqueine D09 LMP3"
+        name="Duqueine D09 P3"
         if not repos.caralias.exists(name):
             repos.caralias.add(CarAlias(
                 id=None,
@@ -325,6 +353,13 @@ def seed_database(repos: Repositories):
                 alias=name,
                 name="Porsche 911 GT3 R LMGT3"
             ))
+        name="Porsche 992 LMGT3"
+        if not repos.caralias.exists(name):
+            repos.caralias.add(CarAlias(
+                id=None,
+                alias=name,
+                name="Porsche 911 GT3 R LMGT3"
+            ))
         name="Mercedes AMG LMGT3"
         if not repos.caralias.exists(name):
             repos.caralias.add(CarAlias(
@@ -333,6 +368,13 @@ def seed_database(repos: Repositories):
                 name="Mercedes-AMG LMGT3"
             ))
         name="Huracan EVO2 LMGT3"
+        if not repos.caralias.exists(name):
+            repos.caralias.add(CarAlias(
+                id=None,
+                alias=name,
+                name="Lamborghini Huracan LMGT3 EVO2"
+            ))
+        name="Lamborghini Huracan EVO2 LMGT3"
         if not repos.caralias.exists(name):
             repos.caralias.add(CarAlias(
                 id=None,
@@ -360,7 +402,7 @@ def seed_database(repos: Repositories):
                 alias=name,
                 name="Ferrari 296 LMGT3"
             ))
-        name="Corvette Z06 LMGT3"
+        name="Chevrolet Corvette Z06 LMGT3"
         if not repos.caralias.exists(name):
             repos.caralias.add(CarAlias(
                 id=None,
@@ -374,6 +416,28 @@ def seed_database(repos: Repositories):
                 alias=name,
                 name="Porsche 911 RSR-19 GTE"
             ))
+        name="Porsche 911 RSR 19 GTE"
+        if not repos.caralias.exists(name):
+            repos.caralias.add(CarAlias(
+                id=None,
+                alias=name,
+                name="Porsche 911 RSR-19 GTE"
+            ))
+        name="Chevrolet Corvette C8R GTE"
+        if not repos.caralias.exists(name):
+            repos.caralias.add(CarAlias(
+                id=None,
+                alias=name,
+                name="Chevrolet Corvette C8.R GTE"
+            ))
+        name="Lexus RCF LMGT3"
+        if not repos.caralias.exists(name):
+            repos.caralias.add(CarAlias(
+                id=None,
+                alias=name,
+                name="Lexus RC-F LMGT3"
+            ))
+        
     seed_car_aliases()
 
     def seed_track_aliases():
@@ -411,8 +475,8 @@ def seed_database(repos: Repositories):
         for alias, names in aliases.items():
             name = names[0]
             layout = names[1]
-            if not repos.caralias.exists(alias):
-                repos.caralias.add(TrackAlias(
+            if not repos.trackalias.exists(alias):
+                repos.trackalias.add(TrackAlias(
                     id=None,
                     alias=alias,
                     name=name,

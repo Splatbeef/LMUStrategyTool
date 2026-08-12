@@ -68,7 +68,7 @@ class ReferenceService:
             laptime_ms = row["laptime_ms"]
             if laptime_ms is None:
                 continue
-            laptime = laptime_ms/100
+            laptime = laptime_ms/1000
             class_id = car.carclass_id
 
             if self.reference_repo.exists(track.id, class_id):
