@@ -158,7 +158,7 @@ class StrategyService:
 
     def build_save_stint_lengths(self, strategy: Strategy) -> list[int] | None:
         race_laps = self.get_race_laps(strategy)
-        push_stints = len(self.build_push_stints(strategy))
+        push_stints = len(self.build_push_stint_lengths(strategy))
         stints_required = push_stints-1
         if stints_required <= 0:
             return None
@@ -218,6 +218,7 @@ class StrategyService:
             else:
                 ve = None
                 ve_usage_real = None
+                fr = None
 
             #Placeholder
             tirechange = TireChange(changed_wheels=set(), compound=None, new_tires=None)
@@ -230,7 +231,7 @@ class StrategyService:
                     stint_number=i,
                     laps = laps,
                     start_lap=start_lap,
-                    laps_done = laps_done,
+                    end_lap = laps_done,
                     fuel_per_lap = fuel_usage_real,
                     fuel_used = fuel,
                     ve_per_lap = ve_usage_real,
@@ -254,6 +255,7 @@ class StrategyService:
             target_stint_length=target_length
         )
         return RacePlan(
+            name = "Push Plan",
             race_laps = race_laps,
             pit_stops = len(stints) - 1,
             make_home_lap=make_home,
@@ -272,6 +274,7 @@ class StrategyService:
             target_stint_length=target_length
         )
         return RacePlan(
+            name = "Plus One Plan",
             race_laps = race_laps,
             pit_stops = len(stints) - 1,
             make_home_lap=make_home,
@@ -292,6 +295,7 @@ class StrategyService:
             stint_lengths=stint_lengths
         )
         return RacePlan(
+            name = "Save Plan",
             race_laps = race_laps,
             pit_stops = len(stints)-1,
             make_home_lap=make_home,
@@ -316,9 +320,15 @@ class StrategyService:
         )
 
     def calculate(self, strategy: Strategy) -> StrategyResult:
+        qualplan = self.build_quali_plan(strategy)
+        plans=[]
+        plans.append(self.build_push_plan(strategy))
+        plans.append(self.build_plus_plan(strategy))
+        save_plan = self.build_save_plan(strategy)
+        if save_plan is not None:
+            plans.append(save_plan)
+        
         return StrategyResult(
-            quali_plan=self.build_quali_plan(strategy),
-            push_plan = self.build_push_plan(strategy),
-            plus_one_plan = self.build_plus_plan(strategy),
-            save_plan = self.build_save_plan(strategy)
+            quali_plan=qualplan,
+            raceplan_presets = plans
         )

@@ -13,7 +13,7 @@ class StrategyRepository:
             cursor.execute(
                 """
                 INSERT INTO strategies (name, track_id, car_id, race_minutes, qual_minutes, laptime_override, laps_override, usage_multiplier, fuel_capacity_override, ve_capacity_override, tire_limit)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (strat.name, strat.track_id, strat.car_id, strat.race_minutes, strat.qual_minutes, strat.laptime_override, strat.laps_override, strat.usage_multiplier, strat.fuel_capacity_override, strat.ve_capacity_override, strat.tire_limit)
             )

@@ -52,10 +52,11 @@ class Stint:
     ve_used: int | None
     stint_time: float
     tire_change: TireChange
-    fuel_ratio = float | None
+    fuel_ratio: float | None
 
 @dataclass
 class RacePlan:
+    name: str
     race_laps: int
     pit_stops: int
     make_home_lap: int | None #Pitting at the end of this lap for full tank will get you home
@@ -71,9 +72,7 @@ class QualiPlan:
 @dataclass
 class StrategyResult:
     quali_plan: QualiPlan
-    push_plan: RacePlan
-    plus_one_plan: RacePlan
-    save_plan: RacePlan | None
+    raceplan_presets: list[RacePlan]
 
 @dataclass
 class Car:
