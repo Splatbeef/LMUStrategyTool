@@ -1,0 +1,8 @@
+- Delete strategy
+- Open plan
+    - Show quali plan
+    - Show stints table
+- Settings
+    - Dataclass with key and value
+        - Version number
+    - Repo
