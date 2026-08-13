@@ -1,8 +1,24 @@
+1.0 Release
 - Delete strategy
 - Open plan
     - Show quali plan
     - Show stints table
+- PB Laptimes
+    - Control for percentage with background color
+    - View
+    - CRUD buttons
+    - Add to strategy views
+- Table filters
 - Settings
-    - Dataclass with key and value
+    - Dataclass with id, key and value
         - Version number
+        - Laptime multiplier
     - Repo
+    - View where they can be changed
+
+Later
+- Add estimated pitstop lengths to calculate a revised race distance
+- Add tire changes
+- Add custom RacePlans
+    - Repo & Dataclass
+    - StintBuilderView
