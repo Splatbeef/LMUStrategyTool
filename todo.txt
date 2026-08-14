@@ -1,10 +1,5 @@
 1.0 Release
-- Delete strategy
-- Open plan
-    - Show quali plan
-    - Show stints table
 - PB Laptimes
-    - Control for percentage with background color
     - View
     - CRUD buttons
     - Add to strategy views
@@ -13,6 +8,7 @@
     - Dataclass with id, key and value
         - Version number
         - Laptime multiplier
+        - Practice laptimes?
     - Repo
     - View where they can be changed
 

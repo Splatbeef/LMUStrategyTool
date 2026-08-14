@@ -151,9 +151,9 @@ class StrategyService:
         stint_length = math.floor(self.get_limiting_stint_laps(strategy))
         return self.build_stints_from_length(race_laps, stint_length)
 
-    def build_plus_stint_lengths(self, strategy: Strategy) -> list[int]:
+    def build_plus_stint_lengths(self, strategy: Strategy, plus: int) -> list[int]:
             race_laps = self.get_race_laps(strategy)
-            stint_length = math.floor(self.get_limiting_stint_laps(strategy))+1
+            stint_length = math.floor(self.get_limiting_stint_laps(strategy))+plus
             return self.build_stints_from_length(race_laps, stint_length)
 
     def build_save_stint_lengths(self, strategy: Strategy) -> list[int] | None:
@@ -262,11 +262,14 @@ class StrategyService:
             stints = stints
         )
 
-    def build_plus_plan(self, strategy: Strategy) -> RacePlan:
-        target_length = math.floor(self.get_limiting_stint_laps(strategy))+1
-        stint_lengths = self.build_plus_stint_lengths(strategy)
+    def build_plus_plan(self, strategy: Strategy, plus: int) -> RacePlan | None:
+        target_length = math.floor(self.get_limiting_stint_laps(strategy))+plus
+        stint_lengths = self.build_plus_stint_lengths(strategy, plus)
+        push_stint_lengths = self.build_push_stint_lengths(strategy)
+        if push_stint_lengths == stint_lengths:
+            return None
         race_laps = self.get_race_laps(strategy)
-        make_home = race_laps - (target_length-1)
+        make_home = race_laps - (target_length-plus)
 
         stints = self.build_stints(
             strategy=strategy,
@@ -274,7 +277,7 @@ class StrategyService:
             target_stint_length=target_length
         )
         return RacePlan(
-            name = "Plus One Plan",
+            name = f"Plus {plus} Plan",
             race_laps = race_laps,
             pit_stops = len(stints) - 1,
             make_home_lap=make_home,
@@ -324,7 +327,15 @@ class StrategyService:
         qualplan = self.build_quali_plan(strategy)
         plans=[]
         plans.append(self.build_push_plan(strategy))
-        plans.append(self.build_plus_plan(strategy))
+
+        plus_one_plan=self.build_plus_plan(strategy, 1)
+        if plus_one_plan is not None:
+            plans.append(plus_one_plan)
+
+        plus_two_plan=self.build_plus_plan(strategy, 2)
+        if plus_two_plan is not None:
+            plans.append(plus_two_plan)
+
         save_plan = self.build_save_plan(strategy)
         if save_plan is not None:
             plans.append(save_plan)

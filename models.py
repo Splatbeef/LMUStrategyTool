@@ -2,6 +2,12 @@ from dataclasses import dataclass
 import datetime as dt
 
 @dataclass
+class Setting:
+    id: int | None
+    key: str
+    value: str | bool | int | float
+
+@dataclass
 class LapTime:
     id: int | None
     track_id: int

@@ -140,7 +140,7 @@ class StrategyView(ft.Container):
 
         self.calculate_button = ft.Button(content="Calculate", on_click=self.calculate_pressed)
         self.save_button = ft.Button(content="Save", on_click=self.save_pressed)
-        self.delete_button = ft.Button(content="Delete")
+        self.delete_button = ft.Button(content="Delete", on_click=self.delete_pressed)
 
         self.load_tracks()
         self.load_cars()
@@ -151,7 +151,8 @@ class StrategyView(ft.Container):
 
         self.plan_presets = ft.Row(
             scroll=ft.ScrollMode.AUTO,
-            expand=True
+            expand=True,
+            wrap=False
         )
         self.details = ft.Column(expand=1, spacing=20)
 
@@ -222,8 +223,112 @@ class StrategyView(ft.Container):
         if strategy is not None:
             self.calculate_pressed()
 
-    def show_plan(self, plan):
-        pass
+    def show_plan(self, plan: RacePlan):
+        strategy = self.current_strategy
+        qualiplan = self.qualiplan
+        car = self.car_repo.get_by_id(strategy.car_id)
+        track = self.track_repo.get_by_id(strategy.track_id)
+        trackstr = f"{track.name}" if len(track.layout)==0 else f"{track.name} ({track.layout})"
+
+        self.racedetails=ft.Column([
+            ft.Text("Race Details",size=20,weight=ft.FontWeight.BOLD),
+            ft.Text(f"Circuit: {trackstr}"),
+            ft.Text(f"{plan.race_laps} Laps"),
+            ft.Text(f"{len(plan.stints)} Stints"),
+            ft.Text(f"{plan.pit_stops} Pit Stops")
+        ],
+        expand=1)
+
+        laptimes=[]
+        laptimes.append(ft.Text("Laptimes",size=20,weight=ft.FontWeight.BOLD))
+        laptimes+=self.get_laptimes(strategy)
+        self.laptimes=ft.Column(laptimes, expand=1)
+
+        
+        qualcontrols=[]
+        qualcontrols.append(ft.Text("Qualifying",size=20,weight=ft.FontWeight.BOLD))
+        qualcontrols.append(ft.Text(f"{qualiplan.laps} Laps"))
+        qualcontrols.append(ft.Text(f"Fuel Usage: {qualiplan.fuel_usage}L per lap"))
+        qualcontrols.append(ft.Text(f"Fuel Needed: {qualiplan.fuel_needed}L"))
+        if qualiplan.fuel_ratio is not None:
+            qualcontrols.append(ft.Text(f"Fuel Ratio: {qualiplan.fuel_ratio} with 100% VE"))
+        self.qualiplan = ft.Column(qualcontrols,
+                expand=1)
+
+        self.details = ft.Row([
+            self.racedetails,
+            ft.VerticalDivider(),
+            self.qualiplan,
+            ft.VerticalDivider(),
+            self.laptimes
+        ],
+        vertical_alignment=ft.CrossAxisAlignment.START,
+        expand=2)
+
+        self.stint_table=ft.DataTable(
+            columns=[
+                ft.DataColumn(ft.Text("Stint")),
+                ft.DataColumn(ft.Text("Laps")),
+                ft.DataColumn(ft.Text("Start Lap")),
+                ft.DataColumn(ft.Text("End Lap"))
+            ]
+        )
+        if car.ve:
+            self.stint_table.columns.append(ft.DataColumn(ft.Text("Total VE")))
+            self.stint_table.columns.append(ft.DataColumn(ft.Text("% VE/Lap")))
+            self.stint_table.columns.append(ft.DataColumn(ft.Text("Fuel Ratio")))
+        else:
+            self.stint_table.columns.append(ft.DataColumn(ft.Text("Total Fuel")))
+            self.stint_table.columns.append(ft.DataColumn(ft.Text("L/Lap")))
+
+        self.stints = ft.Column([
+            self.stint_table
+        ],
+        expand=3,
+        scroll=ft.ScrollMode.AUTO)
+        self.refresh_stints(plan.stints)
+        self.content_area.content=ft.Column([
+            ft.Row([
+                ft.Button(
+                    content="← Back",
+                    on_click=lambda e: self.show_editor(strategy)
+                ),
+
+                ft.Text(
+                    "Plan Viewer",
+                    size=28,
+                    weight=ft.FontWeight.BOLD
+                )
+            ]),
+            ft.Divider(),
+            ft.Column(self.details,
+                      expand=1),
+            ft.Divider(),
+            self.stints
+        ])
+
+    def refresh_stints(self, stints: list[Stint]):
+        self.stint_table.rows.clear()
+        car = self.car_repo.get_by_id(self.current_strategy.car_id)
+
+        for stint in stints:
+            row=ft.DataRow(
+                cells=[
+                    ft.DataCell(ft.Text(str(stint.stint_number))),
+                    ft.DataCell(ft.Text(f"{stint.laps} Laps")),
+                    ft.DataCell(ft.Text(f"Lap {stint.start_lap}")),
+                    ft.DataCell(ft.Text(f"Lap {stint.end_lap}")),
+                ]
+            )
+            if car.ve:
+                row.cells.append(ft.DataCell(ft.Text(f"{stint.ve_used} %")))
+                row.cells.append(ft.DataCell(ft.Text(f"{round(stint.ve_per_lap, 2)}")))
+                row.cells.append(ft.DataCell(ft.Text(f"{stint.fuel_ratio}")))
+            else:
+                row.cells.append(ft.DataCell(ft.Text(f"{stint.fuel_used} L")))
+                row.cells.append(ft.DataCell(ft.Text(f"{round(stint.fuel_per_lap,2)}")))
+
+            self.stint_table.rows.append(row)
 
     def create_plan_card(self, plan: RacePlan) -> ft.Card:
         return ft.Card(
@@ -242,13 +347,13 @@ class StrategyView(ft.Container):
             )
         )
 
-    def get_laptimes(self, strategy: Strategy):
+    def get_laptimes(self, strategy: Strategy) -> list:
+        laptimes=[]
         carclass_id = self.car_repo.get_by_id(strategy.car_id).carclass_id
         reference = self.reference_repo.get_best_reference(strategy.track_id, carclass_id)
         reference_str = self.referenceservice.text_from_laptime(reference.laptime)
-        self.details.controls.append(ft.Text(f"Reference Time: {reference_str}"))
-        #Return a column instead? Or list of controls
-        
+        laptimes.append(ft.Text(f"Reference Time: {reference_str}"))
+        return laptimes
 
     def load_cars(self):
         self.car_dropdown.options = []
@@ -417,13 +522,14 @@ class StrategyView(ft.Container):
             return
         self.current_strategy=strategy
         result = self.stratservice.calculate(self.current_strategy)
+        self.qualiplan = result.quali_plan
         self.plan_presets.controls=[]
         for plan in result.raceplan_presets:
             self.plan_presets.controls.append(self.create_plan_card(plan))
 
         details=[]
         details.append(ft.Text("Laptimes",size=20,weight=ft.FontWeight.BOLD))
-        self.get_laptimes(self.current_strategy)
+        details+=self.get_laptimes(self.current_strategy)
         #Reference Lap
         #PBs
         details.append(ft.Divider())
@@ -484,6 +590,23 @@ class StrategyView(ft.Container):
         self.page.show_dialog(dialog)
         self.page.update()
         return
+
+    def delete_pressed(self, e):
+        if self.current_strategy is not None:
+            id=self.current_strategy.id
+        else:
+            return
+        self.strat_repo.delete(id)
+        dialog = ft.AlertDialog(
+            modal=False,
+            alignment=ft.Alignment.CENTER,
+            title=ft.Text(f"Strategy Deleted"),
+            title_padding = ft.Padding.all(25),
+            content=ft.Text(f"Strategy was succesfully deleted")
+        )
+        self.page.show_dialog(dialog)
+        self.page.update()
+        self.show_library()
 
     def parse_laptime(self, time: str) -> float | None:
         if time is None or time.strip() == "":

@@ -13,6 +13,7 @@ from views.carsview import *
 from views.tracksview import *
 from views.fuelusageview import *
 from views.referenceview import *
+from views.laptimesview import *
 
 
 class MainApp:
@@ -36,6 +37,14 @@ class MainApp:
                     label="Strategies"
                 ),
                 ft.NavigationRailDestination(
+                    icon=ft.Icons.TIMER,
+                    label="Laptimes"
+                ),
+                ft.NavigationRailDestination(
+                    icon=ft.Icons.LOCAL_GAS_STATION,
+                    label="Fuel"
+                ),
+                ft.NavigationRailDestination(
                     icon=ft.Icons.ROUTE,
                     label="Tracks"
                 ),
@@ -44,11 +53,7 @@ class MainApp:
                     label="Cars"
                 ),
                 ft.NavigationRailDestination(
-                    icon=ft.Icons.LOCAL_GAS_STATION,
-                    label="Fuel"
-                ),
-                ft.NavigationRailDestination(
-                    icon=ft.Icons.TIMER,
+                    icon=ft.Icons.LEADERBOARD,
                     label="Reference Times"
                 )
                 
@@ -80,15 +85,18 @@ class MainApp:
                 self.show_strategy()
 
             case 2:
-                self.show_tracks()
+                self.show_laptimes()
 
             case 3:
-                self.show_cars()
-
-            case 4:
                 self.show_fuel()
 
+            case 4:
+                self.show_tracks()
+
             case 5:
+                self.show_cars()
+
+            case 6:
                 self.show_reference_times()
 
     def show_home(self):
@@ -97,6 +105,10 @@ class MainApp:
 
     def show_strategy(self):
         self.content.content = StrategyView(self.repos)
+        self.page.update()
+
+    def show_laptimes(self):
+        self.content.content = LapTimesView(self.repos)
         self.page.update()
 
     def show_tracks(self):
