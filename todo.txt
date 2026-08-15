@@ -1,4 +1,6 @@
 1.0 Release
+- Strategy Quali usage round
+- Fuel ratio round
 - Settings
     - Dataclass with id, key and value
         - Version number
