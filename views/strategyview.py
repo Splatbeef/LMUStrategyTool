@@ -3,6 +3,7 @@ from Repositories.repositories import *
 from models import *
 from services.strategy_service import *
 from services.referenceservice import *
+from controls.laptime_perc import *
 
 class StrategyView(ft.Container):
     def __init__(self, repos: Repositories):
@@ -13,6 +14,7 @@ class StrategyView(ft.Container):
         self.class_repo = repos.classes
         self.fuel_repo = repos.fuel
         self.reference_repo = repos.reference
+        self.times_repo = repos.laptime
         self.stratservice = StrategyService(repos)
         self.referenceservice = ReferenceService(repos.track, repos.car, repos.reference, repos.trackalias, repos.caralias)
 
@@ -349,10 +351,30 @@ class StrategyView(ft.Container):
 
     def get_laptimes(self, strategy: Strategy) -> list:
         laptimes=[]
-        carclass_id = self.car_repo.get_by_id(strategy.car_id).carclass_id
-        reference = self.reference_repo.get_best_reference(strategy.track_id, carclass_id)
+        track = self.track_repo.get_by_id(strategy.track_id)
+        car = self.car_repo.get_by_id(strategy.car_id)
+        reference = self.reference_repo.get_best_reference(strategy.track_id, car.carclass_id)
         reference_str = self.referenceservice.text_from_laptime(reference.laptime)
         laptimes.append(ft.Text(f"Reference Time: {reference_str}"))
+
+        qualitime = self.times_repo.get_by_track_car_session(track.id, car.id, "Qualifying")
+        if qualitime is not None:
+            qualitimestr = self.referenceservice.text_from_laptime(qualitime.laptime)
+            laptimes.append(
+                ft.Row([
+                    ft.Text(f"Qualifying PB: {qualitimestr}"),
+                    LapTimePerc(qualitime.laptime, reference.laptime)
+                ])
+            )
+        racetime = self.times_repo.get_by_track_car_session(track.id, car.id, "Race")
+        if racetime is not None:
+            racetimestr = self.referenceservice.text_from_laptime(racetime.laptime)
+            laptimes.append(
+                ft.Row([
+                    ft.Text(f"Race PB: {racetimestr}"),
+                    LapTimePerc(racetime.laptime, reference.laptime)
+                ])
+            )
         return laptimes
 
     def load_cars(self):

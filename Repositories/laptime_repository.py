@@ -23,7 +23,7 @@ class LapTimeRepository:
 
             return cursor.lastrowid
 
-    def get_all(self) -> list:
+    def get_all(self) -> list[LapTime]:
         with self.db.get_connection() as conn:
             cursor = conn.cursor()
 
@@ -190,7 +190,7 @@ class LapTimeRepository:
         self,
         track_id: int,
         car_id: int
-    ) -> list:
+    ) -> list[LapTime]:
         with self.db.get_connection() as conn:
             cursor = conn.cursor()
 
@@ -216,6 +216,38 @@ class LapTimeRepository:
             )
             for row in rows
         ]
+
+    def get_by_track_car_session(
+            self,
+            track_id: int,
+            car_id: int,
+            sessiontype: str
+        ) -> LapTime | None:
+            with self.db.get_connection() as conn:
+                cursor = conn.cursor()
+    
+                row = cursor.execute(
+                    """
+                    SELECT id, track_id, car_id, laptime, date_set, sessiontype
+                    FROM laptimes
+                    WHERE track_id = ?
+                    AND car_id = ?
+                    AND sessiontype = ?
+                    ORDER BY laptime
+                    """,
+                    (track_id, car_id, sessiontype)
+                ).fetchone()
+            if row is None:
+                return None
+    
+            return LapTime(
+                    id=row[0],
+                    track_id=row[1],
+                    car_id=row[2],
+                    laptime=row[3],
+                    date_set=dt.date.fromisoformat(row[4]),
+                    sessiontype=row[5]
+                )
 
     def get_best_lap(
         self,

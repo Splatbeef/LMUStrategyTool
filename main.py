@@ -55,6 +55,10 @@ class MainApp:
                 ft.NavigationRailDestination(
                     icon=ft.Icons.LEADERBOARD,
                     label="Reference Times"
+                ),
+                ft.NavigationRailDestination(
+                    icon=ft.Icons.SETTINGS,
+                    label="Settings"
                 )
                 
             ],
@@ -99,6 +103,9 @@ class MainApp:
             case 6:
                 self.show_reference_times()
 
+            case 7:
+                self.show_settings()
+
     def show_home(self):
         self.content.content = ft.Text("Home")
         self.page.update()
@@ -125,6 +132,10 @@ class MainApp:
 
     def show_reference_times(self):
         self.content.content = ReferenceView(self.repos.reference, self.repos.track, self.repos.classes, self.repos.car, self.repos.trackalias, self.repos.caralias)
+        self.page.update()
+
+    def show_settings(self):
+        self.content.content = ft.Text("Settings")
         self.page.update()
 
 def seed_database(repos: Repositories):

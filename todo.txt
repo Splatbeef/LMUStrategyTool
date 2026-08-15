@@ -1,9 +1,4 @@
 1.0 Release
-- PB Laptimes
-    - View
-    - CRUD buttons
-    - Add to strategy views
-- Table filters
 - Settings
     - Dataclass with id, key and value
         - Version number
@@ -11,6 +6,8 @@
         - Practice laptimes?
     - Repo
     - View where they can be changed
+- Table filters
+- Home Page?
 
 Later
 - Add estimated pitstop lengths to calculate a revised race distance

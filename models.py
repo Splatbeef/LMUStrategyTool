@@ -5,7 +5,10 @@ import datetime as dt
 class Setting:
     id: int | None
     key: str
-    value: str | bool | int | float
+    value_str: str | None
+    value_bool: bool | None
+    value_int: int | None
+    value_float: float | None
 
 @dataclass
 class LapTime:

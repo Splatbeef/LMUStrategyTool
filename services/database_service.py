@@ -122,3 +122,14 @@ class DatabaseService:
                 )
             """)
 
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS settings (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    key TEXT NOT NULL,
+                    value_str TEXT,
+                    value_bool INTEGER,
+                    value_int INTEGER,
+                    value_float REAL
+                )
+            """)
+

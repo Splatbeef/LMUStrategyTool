@@ -1,7 +1,7 @@
 import flet as ft
 
 class LapTimePerc(ft.Container):
-    def __init__(self, laptime: float, referencetime: float, width: int = 110):
+    def __init__(self, laptime: float, referencetime: float, width: int = 80):
         percent = (laptime / referencetime)*100
         diff = laptime - referencetime
         if diff >= 0:
@@ -13,23 +13,14 @@ class LapTimePerc(ft.Container):
             width=width,
             bgcolor = self.delta_color(percent),
             border_radius=10,
-            padding=10,
-            content=ft.Column([
-                ft.Text(
+            padding=5,
+            content=ft.Text(
                 f"{percent:.2f}%",
                 weight=ft.FontWeight.BOLD,
                 color=ft.Colors.BLACK,
                 text_align=ft.TextAlign.CENTER,
-                size=18
-                ),
-                ft.Text(
-                diff_text,
-                weight=ft.FontWeight.BOLD,
-                color=ft.Colors.BLACK,
-                text_align=ft.TextAlign.CENTER,
-                size=12
+                size=16
                 )
-            ])
         )
 
     def delta_color(self, percent: float) -> str:
