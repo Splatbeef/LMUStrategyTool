@@ -1,12 +1,14 @@
 import datetime as dt
 import pandas as pd
 import flet as ft
+import datetime as dt
 
 from models import *
 from Repositories.repositories import *
 from Repositories.carclass_repository import *
 
 from services.database_service import *
+from services.referenceservice import *
 
 from views.strategyview import *
 from views.carsview import *
@@ -229,7 +231,7 @@ def seed_database(repos: Repositories):
                     ve=False
                 )
             )
-        lmp3s=["Ligier JS P325","Duqueine D09","Ginetta-G61-LT-P325-Evo","Adess AD25"]
+        lmp3s=["Ligier JS P325","Duqueine D09","Ginetta G61-LT-P325-Evo","Adess AD25"]
         class_id = repos.classes.get_by_name("LMP3").id
         for carname in lmp3s:
             if not repos.car.exists(carname):
@@ -541,6 +543,35 @@ def seed_database(repos: Repositories):
                     value_float = 1.005
                 )
             )
+        if not repos.settings.exists("Autosync"):
+            referenceservice = ReferenceService(repos)
+            referenceservice.sync()
+            repos.settings.add(
+                Setting(
+                    id=None,
+                    key="Autosync",
+                    value_str = dt.date.today(),
+                    value_bool = True,
+                    value_int = None,
+                    value_float = None,
+                )
+            )
+        else:
+            sync_setting = repos.settings.get_by_key("Autosync")
+            if (sync_setting.value_str != str(dt.date.today())) and sync_setting.value_bool:
+                referenceservice = ReferenceService(repos)
+                referenceservice.sync()
+                repos.settings.update(
+                    Setting(
+                        id=sync_setting.id,
+                        key="Autosync",
+                        value_str = dt.date.today(),
+                        value_bool = sync_setting.value_bool,
+                        value_int = None,
+                        value_float = None,
+                    )
+                )
+
     seed_settings()
 
 def main(page: ft.Page):

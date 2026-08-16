@@ -1,8 +1,5 @@
 1.0 Release
-- Sync popup
-- Saved/deleted popup everywhere
-- Move DB to APPDATA
-- Home Page?
+- Home Page
 - Icon
 - Make exe
 - Make installer

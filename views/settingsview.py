@@ -22,6 +22,7 @@ class SettingsView(ft.Container):
                     ),
                     self.save_button,
                     ft.Divider(),
+                    self.autosync_box,
                     self.sessiontype_row,
                     self.multiplier_row
                 ],
@@ -30,6 +31,11 @@ class SettingsView(ft.Container):
         )
 
     def load_settings(self):
+        #Autosync
+        self.autosync_box = ft.Checkbox(
+            label="Autosync reference times on startup",
+            value=self.repo.get_by_key("Autosync").value_bool)
+        
         #Laptime sessiontypes
         self.session_dropdown = ft.Dropdown(label="Sessions",options=[
             ft.dropdown.Option(
@@ -83,6 +89,18 @@ class SettingsView(ft.Container):
                 value_bool = None,
                 value_int = None,
                 value_float = float(self.multiplier_field.value)
+            )
+            self.repo.update(new)
+
+        setting = self.repo.get_by_key("Autosync")
+        if setting.value_bool != self.autosync_box.value:
+            new = Setting(
+                id=setting.id,
+                key="Autosync",
+                value_str=setting.value_str,
+                value_bool=self.autosync_box.value,
+                value_int=None,
+                value_float=None
             )
             self.repo.update(new)
 
