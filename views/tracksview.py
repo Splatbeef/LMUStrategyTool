@@ -23,6 +23,7 @@ class TracksView(ft.Container):
         self.clear_button = ft.Button(content="Clear Fields", on_click=self.clear_form)
         self.delete_button = ft.Button(content="Delete", on_click=self.delete_track, disabled=True)
 
+        self.filters()
         self.refresh_table()
 
         super().__init__(
@@ -36,6 +37,7 @@ class TracksView(ft.Container):
                     ),
                     ft.Row([
                         ft.Column([
+                                self.filter_row,
                                 self.tracks_table
                             ],
                             expand=True,
@@ -59,8 +61,36 @@ class TracksView(ft.Container):
             )
         )
 
-    def refresh_table(self):
+    def filters(self):
+        self.trackfilter = ft.Dropdown(label="Track", on_select=self.refresh_table, editable=True, enable_search=True)
         tracks = self.track_repo.get_all()
+        tracknames = sorted(list(set([t.name for t in tracks])))
+        self.trackfilter.options = [
+            ft.dropdown.Option(
+                key = t,
+                text=t
+            )
+            for t in tracknames
+        ]
+
+        self.clear_filter_button = ft.Button(content="Clear Filtes", on_click=self.clear_filters)
+
+        self.filter_row = ft.Row([
+            self.clear_filter_button,
+            self.trackfilter
+        ],
+        expand=True)
+
+    def clear_filters(self):
+        self.trackfilter.value=None
+
+        self.refresh_table()
+
+    def refresh_table(self):
+        if not self.trackfilter.value:
+            tracks = self.track_repo.get_all()
+        else:
+            tracks = self.track_repo.get_by_name(self.trackfilter.value)
 
         self.tracks_table.rows.clear()
 

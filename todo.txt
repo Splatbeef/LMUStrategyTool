@@ -1,6 +1,13 @@
 1.0 Release
 - Table filters
+- Sync popup
+- Saved/deleted popup everywhere
+- Move DB to APPDATA
 - Home Page?
+- Icon
+- Make exe
+- Make installer
+- Check README?
 
 Later
 - Add estimated pitstop lengths to calculate a revised race distance

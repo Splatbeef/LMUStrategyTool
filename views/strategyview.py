@@ -38,10 +38,72 @@ class StrategyView(ft.Container):
 
         self.show_library()
         
+    def filters(self):
+        self.namefilter = ft.TextField(label="Name", on_change=self.refresh_library)
+
+        self.trackfilter = ft.Dropdown(label="Track", on_select=self.refresh_library, editable=True, enable_search=True)
+        tracks = self.track_repo.get_all()
+        for c in tracks:
+            if len(c.layout)>0:
+                trackstr=f"{c.name} ({c.layout})"
+            else:
+                trackstr=c.name
+            self.trackfilter.options.append(
+                ft.dropdown.Option(
+                    key=str(c.id),
+                    text=trackstr
+                ) 
+            )
+
+        self.carfilter = ft.Dropdown(label="Car", on_select=self.refresh_library, editable=True, enable_search=True)
+        cars = self.car_repo.get_all()
+        self.carfilter.options = [
+            ft.dropdown.Option(
+                key=str(c.id),
+                text=c.name
+            ) 
+            for c in cars
+        ]
+
+        self.clear_filter_button = ft.Button(content="Clear Filters", on_click=self.clear_filters)
+
+        self.filter_row = ft.Row([
+            self.clear_filter_button,
+            self.namefilter,
+            self.carfilter,
+            self.trackfilter
+        ],
+        expand=True)
+
+    def clear_filters(self):
+        self.trackfilter.value=None
+        self.carfilter.value=None
+        self.namefilter.value=None
+        self.refresh_library()
 
     def refresh_library(self):
+        if not self.namefilter.value and not self.carfilter.value and not self.trackfilter.value:
+            strategies = self.strat_repo.get_all()
+        elif not self.carfilter.value and not self.trackfilter.value:
+            all_strategies = self.strat_repo.get_all()
+            strategies = [s for s in all_strategies if self.namefilter.value.lower() in s.name.lower()]
+        elif not self.namefilter.value and not self.trackfilter.value:
+            strategies = self.strat_repo.get_by_car(int(self.carfilter.value))
+        elif not self.namefilter.value and not self.carfilter.value:
+            strategies = self.strat_repo.get_by_track(int(self.trackfilter.value))
+        elif not self.namefilter.value:
+            strategies = self.strat_repo.get_by_car_track(int(self.carfilter.value), int(self.trackfilter.value))
+        elif not self.carfilter.value:
+            all_strategies = self.strat_repo.get_by_track(int(self.trackfilter.value))
+            strategies = [s for s in all_strategies if self.namefilter.value.lower() in s.name.lower()]
+        elif not self.trackfilter.value:
+            all_strategies = self.strat_repo.get_by_car(int(self.carfilter.value))
+            strategies = [s for s in all_strategies if self.namefilter.value.lower() in s.name.lower()]
+        else:
+            all_strategies = self.strat_repo.get_by_car_track(int(self.carfilter.value), int(self.trackfilter.value))
+            strategies = [s for s in all_strategies if self.namefilter.value.lower() in s.name.lower()]
+
         self.strategy_table.rows.clear()
-        strategies = self.strat_repo.get_all()
 
         for strategy in strategies:
             car = self.car_repo.get_by_id(strategy.car_id)
@@ -66,6 +128,7 @@ class StrategyView(ft.Container):
         #self.update()
 
     def show_library(self):
+        self.filters()
         self.refresh_library()
         
         self.content_area.content = ft.Column([
@@ -75,6 +138,7 @@ class StrategyView(ft.Container):
             ]),
             ft.Row([
                 ft.Column([
+                        self.filter_row,
                         self.strategy_table
                     ],
                     expand=True,
@@ -253,7 +317,7 @@ class StrategyView(ft.Container):
         qualcontrols.append(ft.Text(f"Fuel Usage: {round(qualiplan.fuel_usage,2)}L per lap"))
         qualcontrols.append(ft.Text(f"Fuel Needed: {qualiplan.fuel_needed}L"))
         if qualiplan.fuel_ratio is not None:
-            qualcontrols.append(ft.Text(f"Fuel Ratio: {round(qualiplan.fuel_ratio,2)} with 100% VE"))
+            qualcontrols.append(ft.Text(f"Fuel Ratio: {math.ceil(qualiplan.fuel_ratio*100)/100} with 100% VE"))
         self.qualiplan = ft.Column(qualcontrols,
                 expand=1)
 
@@ -325,7 +389,7 @@ class StrategyView(ft.Container):
             if car.ve:
                 row.cells.append(ft.DataCell(ft.Text(f"{stint.ve_used} %")))
                 row.cells.append(ft.DataCell(ft.Text(f"{round(stint.ve_per_lap, 2)}")))
-                row.cells.append(ft.DataCell(ft.Text(f"{round(stint.fuel_ratio,2)}")))
+                row.cells.append(ft.DataCell(ft.Text(f"{math.ceil(stint.fuel_ratio*100)/100}")))
             else:
                 row.cells.append(ft.DataCell(ft.Text(f"{stint.fuel_used} L")))
                 row.cells.append(ft.DataCell(ft.Text(f"{round(stint.fuel_per_lap,2)}")))
@@ -560,7 +624,7 @@ class StrategyView(ft.Container):
         details.append(ft.Text(f"Fuel Usage: {round(result.quali_plan.fuel_usage,2)}L per lap"))
         details.append(ft.Text(f"Fuel Needed: {result.quali_plan.fuel_needed}L"))
         if result.quali_plan.fuel_ratio is not None:
-            details.append(ft.Text(f"Fuel Ratio: {round(result.quali_plan.fuel_ratio,2)} with 100% VE"))
+            details.append(ft.Text(f"Fuel Ratio: {math.ceil(result.quali_plan.fuel_ratio*100)/100} with 100% VE"))
         details.append(ft.Divider())
         details.append(ft.Text("Race",size=20,weight=ft.FontWeight.BOLD))
         details.append(ft.Text(f"{result.race_laps} Laps"))

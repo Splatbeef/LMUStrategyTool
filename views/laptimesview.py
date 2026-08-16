@@ -15,6 +15,13 @@ class LapTimesView(ft.Container):
         self.repo_class = repos.classes
         self.repo_track = repos.track
 
+        self.sessions = ["Qualifying", "Race"]
+        setting = repos.settings.get_by_key("Laptime Sessiontypes")
+        if setting.value_int==1:
+            self.sessions.append("Practice")
+        elif setting.value_int==2:
+            self.sessions+=["Race Practice", "Qualifying Practice"]
+
         self.input_column = self.make_input_fields()
         self.selected_laptime = None
 
@@ -27,6 +34,8 @@ class LapTimesView(ft.Container):
                 ft.DataColumn(ft.Text("Laptime"))
             ]
         )
+
+        self.filters()
         self.refresh_table()
 
         super().__init__(
@@ -39,7 +48,7 @@ class LapTimesView(ft.Container):
                 ),
                 ft.Row([
                     ft.Column(
-                        controls=[self.laptimes_table],
+                        controls=[self.filter_row, self.laptimes_table],
                         expand=True,
                         scroll = ft.ScrollMode.AUTO
                     ),
@@ -55,8 +64,7 @@ class LapTimesView(ft.Container):
         self.track_field = ft.Dropdown(label="Track")
         self.time_field = ft.TextField(label="Laptime (00:00.000)")
         self.session_field = ft.Dropdown(label="Session", options=[
-            ft.dropdown.Option("Race"),
-            ft.dropdown.Option("Qualifying")
+            ft.dropdown.Option(s) for s in self.sessions
         ])
         #Check settings for practice laptime option!
 
@@ -116,8 +124,84 @@ class LapTimesView(ft.Container):
                 ) 
             )
 
+    def filters(self):
+        self.trackfilter = ft.Dropdown(label="Track", on_select=self.refresh_table, editable=True, enable_search=True)
+        tracks = self.repo_track.get_all()
+        for c in tracks:
+            if len(c.layout)>0:
+                trackstr=f"{c.name} ({c.layout})"
+            else:
+                trackstr=c.name
+            self.trackfilter.options.append(
+                ft.dropdown.Option(
+                    key=str(c.id),
+                    text=trackstr
+                ) 
+            )
+
+        self.carfilter = ft.Dropdown(label="Car", on_select=self.refresh_table, editable=True, enable_search=True)
+        cars = self.repo_car.get_all()
+        self.carfilter.options = [
+            ft.dropdown.Option(
+                key=str(c.id),
+                text=c.name
+            ) 
+            for c in cars
+        ]
+
+        # self.classfilter = ft.Dropdown(label="Class", on_select=self.refresh_table, editable=True, enable_search=True)
+        # classes = self.class_repo.get_all()
+        # self.classfilter.options = [
+        #     ft.dropdown.Option(
+        #         key=str(c.id),
+        #         text=c.name
+        #     ) 
+        #     for c in classes
+        # ]
+
+        self.sessionfilter = ft.Dropdown(label="Session", on_select=self.refresh_table, editable=True, enable_search=True)
+        self.sessionfilter.options = [
+            ft.dropdown.Option(
+                key=c,
+                text=c
+            ) 
+            for c in self.sessions
+        ]
+
+        self.clear_filter_button = ft.Button(content="Clear Filters", on_click=self.clear_filters)
+
+        self.filter_row = ft.Row([
+            self.clear_filter_button,
+            self.carfilter,
+            self.trackfilter,
+            self.sessionfilter
+        ],
+        expand=True)
+
+    def clear_filters(self):
+        self.trackfilter.value=None
+        self.carfilter.value=None
+        self.sessionfilter.value=None
+        self.refresh_table()
+
     def refresh_table(self):
-        laptimes = self.repo_times.get_all()
+        if not self.trackfilter.value and not self.carfilter.value and not self.sessionfilter.value:
+            laptimes = self.repo_times.get_all()
+        elif not self.carfilter.value and not self.sessionfilter.value:
+            laptimes = self.repo_times.get_by_track(self.trackfilter.value)
+        elif not self.trackfilter.value and not self.sessionfilter.value:
+            laptimes = self.repo_times.get_by_car(self.carfilter.value)
+        elif not self.carfilter.value and not self.trackfilter.value:
+            laptimes = self.repo_times.get_by_session(self.sessionfilter.value)
+        elif not self.carfilter.value:
+            laptimes = self.repo_times.get_by_track_session(self.trackfilter.value, self.sessionfilter.value)
+        elif not self.trackfilter.value:
+            laptimes = self.repo_times.get_by_car_session(self.carfilter.value, self.sessionfilter.value)
+        elif not self.sessionfilter.value:
+            laptimes = self.repo_times.get_by_track_car(self.trackfilter.value, self.carfilter.value)
+        else:
+            laptimes = [self.repo_times.get_by_track_car_session(self.trackfilter.value, self.carfilter.value, self.sessionfilter.value)]
+
         self.laptimes_table.rows.clear()
 
         for laptime in laptimes:

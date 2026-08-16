@@ -147,7 +147,7 @@ class StrategyRepository:
 
         return row is not None
 
-    def get_by_name(self, name: str) -> Strategy | None:
+    def get_by_name(self, name: str) -> list[Strategy]:
         with self.db.get_connection() as conn:
             cursor = conn.cursor()
 
@@ -174,3 +174,94 @@ class StrategyRepository:
                         ve_capacity_override = row[10],
                         tire_limit=row[11]
                     )
+
+    def get_by_car(self, car_id: int) -> list[Strategy]:
+        with self.db.get_connection() as conn:
+            cursor = conn.cursor()
+
+            rows = cursor.execute(
+                """
+                SELECT id, name, track_id, car_id, race_minutes, qual_minutes, laptime_override, laps_override, usage_multiplier, fuel_capacity_override, ve_capacity_override, tire_limit
+                FROM strategies
+                WHERE car_id = ?
+                ORDER BY name
+                """,
+                (car_id,)
+            ).fetchall()
+
+        return [Strategy(
+                        id=row[0],
+                        name=row[1],
+                        track_id = row[2], 
+                        car_id = row[3],
+                        race_minutes = row[4],
+                        qual_minutes = row[5], 
+                        laptime_override = row[6], 
+                        laps_override = row[7], 
+                        usage_multiplier = row[8], 
+                        fuel_capacity_override = row[9], 
+                        ve_capacity_override = row[10],
+                        tire_limit=row[11]
+                    )
+                for row in rows]
+
+    def get_by_track(self, track_id: int) -> list[Strategy]:
+        with self.db.get_connection() as conn:
+            cursor = conn.cursor()
+
+            rows = cursor.execute(
+                """
+                SELECT id, name, track_id, car_id, race_minutes, qual_minutes, laptime_override, laps_override, usage_multiplier, fuel_capacity_override, ve_capacity_override, tire_limit
+                FROM strategies
+                WHERE track_id = ?
+                ORDER BY name
+                """,
+                (track_id,)
+            ).fetchall()
+
+        return [Strategy(
+                        id=row[0],
+                        name=row[1],
+                        track_id = row[2], 
+                        car_id = row[3],
+                        race_minutes = row[4],
+                        qual_minutes = row[5], 
+                        laptime_override = row[6], 
+                        laps_override = row[7], 
+                        usage_multiplier = row[8], 
+                        fuel_capacity_override = row[9], 
+                        ve_capacity_override = row[10],
+                        tire_limit=row[11]
+                    )
+                for row in rows]
+
+    def get_by_car_track(self, car_id: int, track_id: int) -> list[Strategy]:
+        with self.db.get_connection() as conn:
+            cursor = conn.cursor()
+
+            rows = cursor.execute(
+                """
+                SELECT id, name, track_id, car_id, race_minutes, qual_minutes, laptime_override, laps_override, usage_multiplier, fuel_capacity_override, ve_capacity_override, tire_limit
+                FROM strategies
+                WHERE track_id = ?
+                AND car_id = ?
+                ORDER BY name
+                """,
+                (track_id,car_id)
+            ).fetchall()
+
+        return [Strategy(
+                        id=row[0],
+                        name=row[1],
+                        track_id = row[2], 
+                        car_id = row[3],
+                        race_minutes = row[4],
+                        qual_minutes = row[5], 
+                        laptime_override = row[6], 
+                        laps_override = row[7], 
+                        usage_multiplier = row[8], 
+                        fuel_capacity_override = row[9], 
+                        ve_capacity_override = row[10],
+                        tire_limit=row[11]
+                    )
+                for row in rows]

@@ -26,6 +26,7 @@ class ReferenceView(ft.Container):
             rows=[]
         )
 
+        self.filters()
         self.refresh_table()
 
         super().__init__(
@@ -43,6 +44,7 @@ class ReferenceView(ft.Container):
                 ft.Divider(),
                 ft.Row([
                     ft.Column([
+                        self.filter_row,
                         self.times_table
                     ],
                     expand=True,
@@ -67,8 +69,59 @@ class ReferenceView(ft.Container):
         self.refresh_table()
         self.update()
 
+    def filters(self):
+
+        self.trackfilter = ft.Dropdown(label="Track", on_select=self.refresh_table, editable=True, enable_search=True)
+        tracks = self.track_repo.get_all()
+        for c in tracks:
+            if len(c.layout)>0:
+                trackstr=f"{c.name} ({c.layout})"
+            else:
+                trackstr=c.name
+            self.trackfilter.options.append(
+                ft.dropdown.Option(
+                    key=str(c.id),
+                    text=trackstr
+                ) 
+            )
+
+        self.classfilter = ft.Dropdown(label="Class", on_select=self.refresh_table, editable=True, enable_search=True)
+        classes = self.class_repo.get_all()
+        self.classfilter.options = [
+            ft.dropdown.Option(
+                key=str(c.id),
+                text=c.name
+            ) 
+            for c in classes
+        ]
+
+        self.clear_filter_button = ft.Button(content="Clear Filters", on_click=self.clear_filters)
+
+        self.filter_row = ft.Row([
+            self.clear_filter_button,
+            self.trackfilter,
+            self.classfilter
+        ],
+        expand=True)
+
+    def clear_filters(self):
+        self.trackfilter.value=None
+        self.classfilter.value=None
+        self.refresh_table()
+
     def refresh_table(self):
-        times = self.reference_repo.get_all()
+        if not self.trackfilter.value and not self.classfilter.value:
+            times = self.reference_repo.get_all()
+        elif not self.trackfilter.value:
+            class_id = int(self.classfilter.value)
+            times = self.reference_repo.get_by_class(class_id)
+        elif not self.classfilter.value:
+            track_id = int(self.trackfilter.value)
+            times = self.reference_repo.get_by_track(track_id)
+        else:
+            track_id = int(self.trackfilter.value)
+            class_id = int(self.classfilter.value)
+            times = self.reference_repo.get_by_track_class(track_id, class_id)
 
         self.times_table.rows.clear()
 

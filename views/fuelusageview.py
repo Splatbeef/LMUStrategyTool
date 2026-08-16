@@ -36,6 +36,7 @@ class FuelUsageView(ft.Container):
 
         self.load_cars()
         self.load_tracks()
+        self.filters()
         self.refresh_table()
 
         super().__init__(
@@ -49,6 +50,7 @@ class FuelUsageView(ft.Container):
                     ),
                     ft.Row([
                         ft.Column([
+                            self.filter_row,
                             self.usage_table
                         ],
                         expand=True,
@@ -110,8 +112,55 @@ class FuelUsageView(ft.Container):
                 ) 
             )
 
+    def filters(self):
+
+        self.trackfilter = ft.Dropdown(label="Track", on_select=self.refresh_table, editable=True, enable_search=True)
+        tracks = self.track_repo.get_all()
+        for c in tracks:
+            if len(c.layout)>0:
+                trackstr=f"{c.name} ({c.layout})"
+            else:
+                trackstr=c.name
+            self.trackfilter.options.append(
+                ft.dropdown.Option(
+                    key=str(c.id),
+                    text=trackstr
+                ) 
+            )
+
+        self.carfilter = ft.Dropdown(label="Car", on_select=self.refresh_table, editable=True, enable_search=True)
+        cars = self.car_repo.get_all()
+        self.carfilter.options = [
+            ft.dropdown.Option(
+                key=str(c.id),
+                text=c.name
+            ) 
+            for c in cars
+        ]
+
+        self.clear_filter_button = ft.Button(content="Clear Filters", on_click=self.clear_filters)
+
+        self.filter_row = ft.Row([
+            self.clear_filter_button,
+            self.carfilter,
+            self.trackfilter
+        ],
+        expand=True)
+
+    def clear_filters(self):
+        self.trackfilter.value=None
+        self.carfilter.value=None
+        self.refresh_table()
+
     def refresh_table(self):
-        usages = self.fuel_repo.get_all()
+        if not self.trackfilter.value and not self.carfilter.value:
+            usages = self.fuel_repo.get_all()
+        elif not self.trackfilter.value:
+            usages = self.fuel_repo.get_by_car(int(self.carfilter.value))
+        elif not self.carfilter.value:
+            usages = self.fuel_repo.get_by_track(int(self.trackfilter.value))
+        else:
+            usages = [self.fuel_repo.get_by_track_car(int(self.trackfilter.value), int(self.carfilter.value))]
 
         self.usage_table.rows.clear()
         

@@ -141,7 +141,7 @@ class ReferenceTimeRepository:
                 SELECT id, track_id, carclass_id, laptime, date_set, source
                 FROM referencetimes
                 WHERE track_id = ?
-                ORDER BY laptime
+                ORDER BY track_id
                 """,
                 (track_id,)
             ).fetchall()
@@ -167,7 +167,7 @@ class ReferenceTimeRepository:
                 SELECT id, track_id, carclass_id, laptime, date_set, source
                 FROM referencetimes
                 WHERE carclass_id = ?
-                ORDER BY laptime
+                ORDER BY track_id
                 """,
                 (carclass_id,)
             ).fetchall()

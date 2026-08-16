@@ -29,7 +29,8 @@ class StrategyService:
             reference = self.reference_repo.get_best_reference(track_id, class_id)
             if reference is None:
                 raise ValueError(f"Reference laptime not found")
-            return reference.laptime
+            factor = 1.005
+            return reference.laptime * factor
 
     def get_race_laps(self, strategy: Strategy) -> int:
         if strategy.laps_override is not None:

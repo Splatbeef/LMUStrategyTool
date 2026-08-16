@@ -90,10 +90,10 @@ class CarsView(ft.Container):
             for c in classes
         ]
 
-        self.clear_button = ft.Button(content="Clear Filters", on_click=self.clear_filters)
+        self.clear_filter_button = ft.Button(content="Clear Filters", on_click=self.clear_filters)
 
         self.filter_row = ft.Row([
-            self.clear_button,
+            self.clear_filter_button,
             self.carfilter,
             self.classfilter
         ],
@@ -159,6 +159,9 @@ class CarsView(ft.Container):
 
     def add_car(self):
 
+        if not self.checks():
+            return
+
         car = Car(
             id=None,
             name=self.name_field.value,
@@ -205,6 +208,8 @@ class CarsView(ft.Container):
 
         if self.selected_car_id is None:
             return
+        if not self.checks():
+            return
 
         car = Car(
             id=self.selected_car_id,
@@ -235,6 +240,42 @@ class CarsView(ft.Container):
         self.refresh_table()
 
         self.update()
+
+    def checks(self):
+        if not self.name_field.value:
+            dialog = ft.AlertDialog(
+                modal=False,
+                alignment=ft.Alignment.CENTER,
+                title=ft.Text(f"No Name Found"),
+                title_padding = ft.Padding.all(25),
+                content=ft.Text("Please add a car name")
+            )
+            self.page.show_dialog(dialog)
+            self.page.update()
+            return False
+        if not self.class_dropdown.value:
+            dialog = ft.AlertDialog(
+                modal=False,
+                alignment=ft.Alignment.CENTER,
+                title=ft.Text(f"No Class Found"),
+                title_padding = ft.Padding.all(25),
+                content=ft.Text("Please select a class")
+            )
+            self.page.show_dialog(dialog)
+            self.page.update()
+            return False
+        if not self.fuel_capacity_field.value:
+            dialog = ft.AlertDialog(
+                modal=False,
+                alignment=ft.Alignment.CENTER,
+                title=ft.Text(f"No Fuel Capacity Found"),
+                title_padding = ft.Padding.all(25),
+                content=ft.Text("Please input the fuel tank capacity")
+            )
+            self.page.show_dialog(dialog)
+            self.page.update()
+            return False
+        return True
 
     def clear_form(self):
 

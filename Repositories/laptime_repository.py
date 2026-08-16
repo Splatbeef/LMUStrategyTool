@@ -186,6 +186,32 @@ class LapTimeRepository:
             for row in rows
         ]
 
+    def get_by_session(self, session: str) -> list:
+        with self.db.get_connection() as conn:
+            cursor = conn.cursor()
+
+            rows = cursor.execute(
+                """
+                SELECT id, track_id, car_id, laptime, date_set, sessiontype
+                FROM laptimes
+                WHERE sessiontype = ?
+                ORDER BY laptime
+                """,
+                (session,)
+            ).fetchall()
+
+        return [
+            LapTime(
+                id=row[0],
+                track_id=row[1],
+                car_id=row[2],
+                laptime=row[3],
+                date_set=dt.date.fromisoformat(row[4]),
+                sessiontype=row[5]
+            )
+            for row in rows
+        ]
+
     def get_by_track_car(
         self,
         track_id: int,
@@ -203,6 +229,68 @@ class LapTimeRepository:
                 ORDER BY laptime
                 """,
                 (track_id, car_id)
+            ).fetchall()
+
+        return [
+            LapTime(
+                id=row[0],
+                track_id=row[1],
+                car_id=row[2],
+                laptime=row[3],
+                date_set=dt.date.fromisoformat(row[4]),
+                sessiontype=row[5]
+            )
+            for row in rows
+        ]
+
+    def get_by_track_session(
+        self,
+        track_id: int,
+        session: str
+    ) -> list[LapTime]:
+        with self.db.get_connection() as conn:
+            cursor = conn.cursor()
+
+            rows = cursor.execute(
+                """
+                SELECT id, track_id, car_id, laptime, date_set, sessiontype
+                FROM laptimes
+                WHERE track_id = ?
+                AND sessiontype = ?
+                ORDER BY laptime
+                """,
+                (track_id, session)
+            ).fetchall()
+
+        return [
+            LapTime(
+                id=row[0],
+                track_id=row[1],
+                car_id=row[2],
+                laptime=row[3],
+                date_set=dt.date.fromisoformat(row[4]),
+                sessiontype=row[5]
+            )
+            for row in rows
+        ]
+
+    def get_by_car_session(
+        self,
+        car_id: int,
+        session: str
+    ) -> list[LapTime]:
+        with self.db.get_connection() as conn:
+            cursor = conn.cursor()
+
+            rows = cursor.execute(
+                """
+                SELECT id, track_id, car_id, laptime, date_set, sessiontype
+                FROM laptimes
+                WHERE car_id = ?
+                AND sessiontype = ?
+                ORDER BY laptime
+                """,
+                (car_id, session)
             ).fetchall()
 
         return [
