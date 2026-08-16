@@ -183,6 +183,16 @@ class CarsView(ft.Container):
         self.refresh_table()
         self.update()
 
+        dialog = ft.AlertDialog(
+            modal=False,
+            alignment=ft.Alignment.CENTER,
+            title=ft.Text(f"Saved Succesfully"),
+            title_padding = ft.Padding.all(25),
+            content=ft.Text("Car added succesfully!")
+        )
+        self.page.show_dialog(dialog)
+        self.page.update()
+
     def edit_car(self, car: Car):
 
         self.selected_car_id = car.id
@@ -241,6 +251,16 @@ class CarsView(ft.Container):
 
         self.update()
 
+        dialog = ft.AlertDialog(
+            modal=False,
+            alignment=ft.Alignment.CENTER,
+            title=ft.Text(f"Saved Succesfully"),
+            title_padding = ft.Padding.all(25),
+            content=ft.Text("Car saved succesfully!")
+        )
+        self.page.show_dialog(dialog)
+        self.page.update()
+
     def checks(self):
         if not self.name_field.value:
             dialog = ft.AlertDialog(
@@ -286,6 +306,7 @@ class CarsView(ft.Container):
         self.fuel_capacity_field.value = ""
         self.ve_checkbox.value = False
 
+        self.delete_button.disabled=True
         self.edit_button.disabled = True
 
         self.update()
@@ -299,3 +320,13 @@ class CarsView(ft.Container):
         self.clear_form()
         self.refresh_table()
         self.update()
+
+        dialog = ft.AlertDialog(
+            modal=False,
+            alignment=ft.Alignment.CENTER,
+            title=ft.Text(f"Deleted Succesfully"),
+            title_padding = ft.Padding.all(25),
+            content=ft.Text("Car deleted succesfully!")
+        )
+        self.page.show_dialog(dialog)
+        self.page.update()

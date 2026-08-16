@@ -55,6 +55,14 @@ class ReferenceView(ft.Container):
         )
 
     def sync_clicked(self, e):
+        self.dialog = ft.AlertDialog(
+            modal=False,
+            alignment=ft.Alignment.CENTER,
+            title=ft.Text(f"Syncing"),
+            title_padding = ft.Padding.all(25),
+            content=ft.Text("Sync successful!")
+        )
+    
         missing = self.referenceservice.sync()
         if missing["tracks"]:
             self.show_track_alias_dialog(missing["tracks"])
@@ -62,7 +70,12 @@ class ReferenceView(ft.Container):
             self.show_car_alias_dialog(missing["cars"])
             
         self.refresh_table()
-        self.update()
+        self.page.show_dialog(self.dialog)
+        self.page.update()
+
+    def close_sync_dialog(self, e):
+        self.dialog.open = False
+        self.page.update()
 
     def clear_clicked(self, e):
         self.reference_repo.clear()

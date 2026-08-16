@@ -1,5 +1,4 @@
 1.0 Release
-- Table filters
 - Sync popup
 - Saved/deleted popup everywhere
 - Move DB to APPDATA

@@ -264,14 +264,25 @@ class LapTimesView(ft.Container):
             sessiontype = session
         )
 
+        dialog = ft.AlertDialog(
+            modal=False,
+            alignment=ft.Alignment.CENTER,
+            title=ft.Text(f"Saved Succesfully"),
+            title_padding = ft.Padding.all(25),
+            content=ft.Text("Laptime saved succesfully!")
+        )
+
         if self.selected_laptime is not None:
             self.repo_times.update(laptime)
         else:
             self.repo_times.add(laptime)
+            dialog.content=ft.Text("Laptime added succesfully!")
 
         self.clear_form()
         self.refresh_table()
         self.update()
+        self.page.show_dialog(dialog)
+        self.page.update()
 
     def delete_laptime(self, e=None):
         if self.selected_laptime is not None:
@@ -280,6 +291,15 @@ class LapTimesView(ft.Container):
             self.clear_form()
             self.refresh_table()
             self.update()
+            dialog = ft.AlertDialog(
+                modal=False,
+                alignment=ft.Alignment.CENTER,
+                title=ft.Text(f"Deleted Succesfully"),
+                title_padding = ft.Padding.all(25),
+                content=ft.Text("Laptime deleted succesfully!")
+            )
+            self.page.show_dialog(dialog)
+            self.page.update()
 
     def checks(self):
         try:

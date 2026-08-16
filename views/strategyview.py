@@ -17,7 +17,7 @@ class StrategyView(ft.Container):
         self.times_repo = repos.laptime
         self.stratservice = StrategyService(repos)
         self.referenceservice = ReferenceService(repos)
-
+        
         self.content_area = ft.Container(expand=True)
 
         self.strategy_table = ft.DataTable(

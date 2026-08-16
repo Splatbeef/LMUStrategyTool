@@ -218,6 +218,16 @@ class FuelUsageView(ft.Container):
         self.refresh_table()
         self.update()
 
+        dialog = ft.AlertDialog(
+            modal=False,
+            alignment=ft.Alignment.CENTER,
+            title=ft.Text(f"Saved Succesfully"),
+            title_padding = ft.Padding.all(25),
+            content=ft.Text("Fuel usage added succesfully!")
+        )
+        self.page.show_dialog(dialog)
+        self.page.update()
+
     def edit_usage(self, usage: FuelUsage):
 
         self.selected_usage_id = usage.id
@@ -267,6 +277,16 @@ class FuelUsageView(ft.Container):
 
         self.update()
 
+        dialog = ft.AlertDialog(
+            modal=False,
+            alignment=ft.Alignment.CENTER,
+            title=ft.Text(f"Saved Succesfully"),
+            title_padding = ft.Padding.all(25),
+            content=ft.Text(f"Fuel usage for saved succesfully!")
+        )
+        self.page.show_dialog(dialog)
+        self.page.update()
+
     def clear_form(self):
 
         self.selected_usage_id = None
@@ -288,3 +308,13 @@ class FuelUsageView(ft.Container):
         self.clear_form()
         self.refresh_table()
         self.update()
+
+        dialog = ft.AlertDialog(
+            modal=False,
+            alignment=ft.Alignment.CENTER,
+            title=ft.Text(f"Deleted Succesfully"),
+            title_padding = ft.Padding.all(25),
+            content=ft.Text("Fuel usage deleted succesfully!")
+        )
+        self.page.show_dialog(dialog)
+        self.page.update()
