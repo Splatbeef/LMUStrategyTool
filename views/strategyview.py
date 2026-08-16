@@ -250,10 +250,10 @@ class StrategyView(ft.Container):
         qualcontrols=[]
         qualcontrols.append(ft.Text("Qualifying",size=20,weight=ft.FontWeight.BOLD))
         qualcontrols.append(ft.Text(f"{qualiplan.laps} Laps"))
-        qualcontrols.append(ft.Text(f"Fuel Usage: {qualiplan.fuel_usage}L per lap"))
+        qualcontrols.append(ft.Text(f"Fuel Usage: {round(qualiplan.fuel_usage,2)}L per lap"))
         qualcontrols.append(ft.Text(f"Fuel Needed: {qualiplan.fuel_needed}L"))
         if qualiplan.fuel_ratio is not None:
-            qualcontrols.append(ft.Text(f"Fuel Ratio: {qualiplan.fuel_ratio} with 100% VE"))
+            qualcontrols.append(ft.Text(f"Fuel Ratio: {round(qualiplan.fuel_ratio,2)} with 100% VE"))
         self.qualiplan = ft.Column(qualcontrols,
                 expand=1)
 
@@ -325,7 +325,7 @@ class StrategyView(ft.Container):
             if car.ve:
                 row.cells.append(ft.DataCell(ft.Text(f"{stint.ve_used} %")))
                 row.cells.append(ft.DataCell(ft.Text(f"{round(stint.ve_per_lap, 2)}")))
-                row.cells.append(ft.DataCell(ft.Text(f"{stint.fuel_ratio}")))
+                row.cells.append(ft.DataCell(ft.Text(f"{round(stint.fuel_ratio,2)}")))
             else:
                 row.cells.append(ft.DataCell(ft.Text(f"{stint.fuel_used} L")))
                 row.cells.append(ft.DataCell(ft.Text(f"{round(stint.fuel_per_lap,2)}")))
@@ -557,10 +557,10 @@ class StrategyView(ft.Container):
         details.append(ft.Divider())
         details.append(ft.Text("Qualifying",size=20,weight=ft.FontWeight.BOLD))
         details.append(ft.Text(f"{result.quali_plan.laps} Laps"))
-        details.append(ft.Text(f"Fuel Usage: {result.quali_plan.fuel_usage}L per lap"))
+        details.append(ft.Text(f"Fuel Usage: {round(result.quali_plan.fuel_usage,2)}L per lap"))
         details.append(ft.Text(f"Fuel Needed: {result.quali_plan.fuel_needed}L"))
         if result.quali_plan.fuel_ratio is not None:
-            details.append(ft.Text(f"Fuel Ratio: {result.quali_plan.fuel_ratio} with 100% VE"))
+            details.append(ft.Text(f"Fuel Ratio: {round(result.quali_plan.fuel_ratio,2)} with 100% VE"))
         details.append(ft.Divider())
         details.append(ft.Text("Race",size=20,weight=ft.FontWeight.BOLD))
         details.append(ft.Text(f"{result.race_laps} Laps"))
@@ -626,9 +626,9 @@ class StrategyView(ft.Container):
             title_padding = ft.Padding.all(25),
             content=ft.Text(f"Strategy was succesfully deleted")
         )
-        self.page.show_dialog(dialog)
-        self.page.update()
         self.show_library()
+        self.page.update()
+        self.page.show_dialog(dialog)
 
     def parse_laptime(self, time: str) -> float | None:
         if time is None or time.strip() == "":

@@ -205,17 +205,22 @@ class StrategyService:
         for i, laps in enumerate(stint_lengths, start=1):
             target_length = target_stint_length if target_stint_length is not None else laps
 
-            fuel_usage = self.get_stint_fuel_usage(strategy, target_length)
             fuel_capacity = self.get_fuel_capacity(strategy)
-            fuel = math.ceil(min(laps * fuel_usage, fuel_capacity))
-            fuel_usage_real = fuel/laps
-
             ve_usage = self.get_stint_ve_usage(strategy, target_length)
+
             if ve_usage is not None:
+                regular_ve = self.get_ve_usage(strategy)
+                regular_fuel = self.get_fuel_usage(strategy)
+                fr = regular_fuel/regular_ve
                 ve = math.ceil(min(laps * ve_usage, 100))
                 ve_usage_real = ve/laps
-                fr = fuel/ve
+                fuel_usage = fr*ve_usage_real
+                fuel = math.ceil(min(laps * fuel_usage, fuel_capacity))
+                fuel_usage_real = fuel/laps
             else:
+                fuel_usage = self.get_stint_fuel_usage(strategy, target_length)
+                fuel = math.ceil(min(laps * fuel_usage, fuel_capacity))
+                fuel_usage_real = fuel/laps
                 ve = None
                 ve_usage_real = None
                 fr = None

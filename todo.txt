@@ -1,13 +1,4 @@
 1.0 Release
-- Strategy Quali usage round
-- Fuel ratio round
-- Settings
-    - Dataclass with id, key and value
-        - Version number
-        - Laptime multiplier
-        - Practice laptimes?
-    - Repo
-    - View where they can be changed
 - Table filters
 - Home Page?
 
