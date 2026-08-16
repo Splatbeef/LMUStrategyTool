@@ -134,9 +134,6 @@ class CarRepository:
                 (name,)
             ).fetchone()
 
-        if row is None:
-            print(name)
-
         return Car(
                 id=row[0],
                 name=row[1],

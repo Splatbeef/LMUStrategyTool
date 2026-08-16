@@ -1,15 +1,13 @@
 import flet as ft
 from models import Car, CarAlias
-from Repositories.car_repository import CarRepository
-from Repositories.carclass_repository import CarClassRepository
-from Repositories.alias_repository import CarAliasRepository
+from Repositories.repositories import *
 
 
 class CarsView(ft.Container):
-    def __init__(self, car_repo: CarRepository, class_repo: CarClassRepository, caralias_repo: CarAliasRepository):
-        self.car_repo = car_repo
-        self.class_repo = class_repo
-        self.alias_repo = caralias_repo
+    def __init__(self, repos: Repositories):
+        self.car_repo = repos.car
+        self.class_repo = repos.classes
+        self.alias_repo = repos.caralias
         self.name_field = ft.TextField(label="Car Name")
         self.class_dropdown = ft.Dropdown(label="Class")
         self.fuel_capacity_field = ft.TextField(label="Fuel Tank Capacity")

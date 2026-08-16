@@ -2,20 +2,16 @@ import flet as ft
 import datetime as dt
 
 from models import Car, Track, ReferenceTime
-from Repositories.referencetime_repository import ReferenceTimeRepository
-from Repositories.car_repository import CarRepository
-from Repositories.carclass_repository import CarClassRepository
-from Repositories.track_repository import TrackRepository
-from Repositories.alias_repository import *
+from Repositories.repositories import *
 from services.referenceservice import *
 
 class ReferenceView(ft.Container):
-    def __init__(self, reference_repo: ReferenceTimeRepository, track_repo: TrackRepository, class_repo: CarClassRepository, car_repo: CarRepository, trackalias_repo: TrackAliasRepository, caralias_repo: CarAliasRepository):
-        self.class_repo = class_repo
-        self.car_repo = car_repo
-        self.track_repo = track_repo
-        self.reference_repo = reference_repo
-        self.referenceservice = ReferenceService(track_repo, car_repo, reference_repo, trackalias_repo, caralias_repo)
+    def __init__(self, repos: Repositories):
+        self.class_repo = repos.classes
+        self.car_repo = repos.car
+        self.track_repo = repos.track
+        self.reference_repo = repos.reference
+        self.referenceservice = ReferenceService(repos)
 
         self.sync_button = ft.Button(content="Sync Laptimes", on_click=self.sync_clicked)
         self.clear_button = ft.Button(content="Clear Laptimes", on_click=self.clear_clicked)

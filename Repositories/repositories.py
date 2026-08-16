@@ -6,6 +6,7 @@ from Repositories.referencetime_repository import ReferenceTimeRepository
 from Repositories.fuel_repository import FuelRepository
 from Repositories.strategy_repository import StrategyRepository
 from Repositories.alias_repository import *
+from Repositories.settings_repository import SettingsRepository
 
 class Repositories:
 
@@ -19,3 +20,4 @@ class Repositories:
         self.laptime = LapTimeRepository(db)
         self.trackalias = TrackAliasRepository(db)
         self.caralias = CarAliasRepository(db)
+        self.settings = SettingsRepository(db)

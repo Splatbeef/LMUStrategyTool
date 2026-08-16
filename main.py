@@ -14,6 +14,7 @@ from views.tracksview import *
 from views.fuelusageview import *
 from views.referenceview import *
 from views.laptimesview import *
+from views.settingsview import *
 
 
 class MainApp:
@@ -123,19 +124,19 @@ class MainApp:
         self.page.update()
 
     def show_cars(self):
-        self.content.content = CarsView(self.repos.car, self.repos.classes, self.repos.caralias)
+        self.content.content = CarsView(self.repos)
         self.page.update()
 
     def show_fuel(self):
-        self.content.content = FuelUsageView(self.repos.car, self.repos.classes, self.repos.fuel, self.repos.track)
+        self.content.content = FuelUsageView(self.repos)
         self.page.update()
 
     def show_reference_times(self):
-        self.content.content = ReferenceView(self.repos.reference, self.repos.track, self.repos.classes, self.repos.car, self.repos.trackalias, self.repos.caralias)
+        self.content.content = ReferenceView(self.repos)
         self.page.update()
 
     def show_settings(self):
-        self.content.content = ft.Text("Settings")
+        self.content.content = SettingsView(self.repos)
         self.page.update()
 
 def seed_database(repos: Repositories):
@@ -460,7 +461,6 @@ def seed_database(repos: Repositories):
                 alias=name,
                 name="Lexus RC-F LMGT3"
             ))
-        
     seed_car_aliases()
 
     def seed_track_aliases():
@@ -507,6 +507,42 @@ def seed_database(repos: Repositories):
                 ))
     seed_track_aliases()
 
+    def seed_settings():
+        if not repos.settings.exists("Version"):
+            repos.settings.add(
+                Setting(
+                    id=None,
+                    key="Version",
+                    value_str = version_number,
+                    value_bool = None,
+                    value_int = None,
+                    value_float = None
+                )
+            )
+        if not repos.settings.exists("Laptime Sessiontypes"):
+            repos.settings.add(
+                Setting(
+                    id=None,
+                    key="Laptime Sessiontypes",
+                    value_str = None,
+                    value_bool = None,
+                    value_int = 1,          #0 - Quali and Race, 1 - Quali, Race, Practice, 2 - Quali, Race, Quali Practice, Race Practice
+                    value_float = None
+                )
+            )
+        if not repos.settings.exists("Laptime Multiplier"):
+            repos.settings.add(
+                Setting(
+                    id=None,
+                    key="Laptime Multiplier",
+                    value_str = None,
+                    value_bool = None,
+                    value_int = None,
+                    value_float = 1.005
+                )
+            )
+    seed_settings()
+
 def main(page: ft.Page):
     page.title="LMU Strategy Tool"
 
@@ -520,4 +556,5 @@ def main(page: ft.Page):
         repos=repos)
 
 if __name__ == "__main__":
+    version_number="1.0.0"
     ft.run(main)

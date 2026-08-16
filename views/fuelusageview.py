@@ -1,17 +1,18 @@
 import flet as ft
 
 from models import Car, FuelUsage, Track, CarClass
+from Repositories.repositories import *
 from Repositories.car_repository import CarRepository
 from Repositories.carclass_repository import CarClassRepository
 from Repositories.fuel_repository import FuelRepository
 from Repositories.track_repository import TrackRepository
 
 class FuelUsageView(ft.Container):
-    def __init__(self, car_repo: CarRepository, class_repo: CarClassRepository, fuel_repo: FuelRepository, track_repo: TrackRepository):
-        self.car_repo = car_repo
-        self.class_repo = class_repo
-        self.fuel_repo = fuel_repo
-        self.track_repo = track_repo
+    def __init__(self, repos: Repositories):
+        self.car_repo = repos.car
+        self.class_repo = repos.classes
+        self.fuel_repo = repos.fuel
+        self.track_repo = repos.track
 
         self.name_selected = ft.Dropdown(label="Select Car")
         self.track_selected = ft.Dropdown(label="Select Track")

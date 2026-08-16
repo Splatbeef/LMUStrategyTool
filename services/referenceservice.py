@@ -10,17 +10,18 @@ from Repositories.carclass_repository import CarClassRepository
 from Repositories.referencetime_repository import ReferenceTimeRepository
 from Repositories.track_repository import TrackRepository
 from Repositories.alias_repository import *
-
+from Repositories.repositories import *
 
 
 class ReferenceService:
-    def __init__(self, track_repo: TrackRepository, car_repo: CarRepository, reference_repo: ReferenceTimeRepository, track_alias_repo: TrackAliasRepository, car_alias_repo: CarAliasRepository):
+    def __init__(self, repos: Repositories):
         self.url = "https://gosetups.gg/wp-json/gosetups/v1/laptimes"
-        self.track_repo = track_repo
-        self.car_repo = car_repo
-        self.reference_repo = reference_repo
-        self.trackalias_repo = track_alias_repo
-        self.caralias_repo = car_alias_repo
+        self.track_repo = repos.track
+        self.car_repo = repos.car
+        self.reference_repo = repos.reference
+        self.trackalias_repo = repos.trackalias
+        self.caralias_repo = repos.caralias
+        self.settings_repo = repos.settings
 
     def sync(self):
         response = requests.get(self.url, timeout=30)
@@ -69,6 +70,7 @@ class ReferenceService:
             if laptime_ms is None:
                 continue
             laptime = laptime_ms/1000
+            laptime *= self.settings_repo.get_by_key("Laptime Multiplier").value_float
             class_id = car.carclass_id
 
             if self.reference_repo.exists(track.id, class_id):

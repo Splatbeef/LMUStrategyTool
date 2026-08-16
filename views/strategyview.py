@@ -16,7 +16,7 @@ class StrategyView(ft.Container):
         self.reference_repo = repos.reference
         self.times_repo = repos.laptime
         self.stratservice = StrategyService(repos)
-        self.referenceservice = ReferenceService(repos.track, repos.car, repos.reference, repos.trackalias, repos.caralias)
+        self.referenceservice = ReferenceService(repos)
 
         self.content_area = ft.Container(expand=True)
 
