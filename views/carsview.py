@@ -28,9 +28,12 @@ class CarsView(ft.Container):
         self.clear_button = ft.Button(content="Clear Fields", on_click=self.clear_form)
         self.delete_button = ft.Button(content="Delete", on_click=self.delete_car, disabled=True)
 
-        self.load_classes()
-        self.refresh_table()
+        
 
+        self.load_classes()
+        self.filters()
+        self.refresh_table()
+        
         super().__init__(
             expand=True,
             content=ft.Column(
@@ -42,7 +45,7 @@ class CarsView(ft.Container):
                     ),
                     ft.Row([
                         ft.Column(
-                            controls=[self.cars_table],
+                            controls=[self.filter_row,self.cars_table],
                             expand=True,
                             scroll=ft.ScrollMode.AUTO
                                   ),
@@ -67,6 +70,40 @@ class CarsView(ft.Container):
             )
         )
 
+    def filters(self):
+        self.carfilter = ft.Dropdown(label="Car", on_select=self.refresh_table, editable=True, enable_search=True)
+        cars = self.car_repo.get_all()
+        self.carfilter.options = [
+            ft.dropdown.Option(
+                key=str(c.id),
+                text=c.name
+            ) 
+            for c in cars
+        ]
+        self.classfilter = ft.Dropdown(label="Class", on_select=self.refresh_table, editable=True, enable_search=True)
+        classes = self.class_repo.get_all()
+        self.classfilter.options = [
+            ft.dropdown.Option(
+                key=str(c.id),
+                text=c.name
+            ) 
+            for c in classes
+        ]
+
+        self.clear_button = ft.Button(content="Clear Filters", on_click=self.clear_filters)
+
+        self.filter_row = ft.Row([
+            self.clear_button,
+            self.carfilter,
+            self.classfilter
+        ],
+        expand=True)
+
+    def clear_filters(self):
+        self.carfilter.value=None
+        self.classfilter.value=None
+        self.refresh_table()
+
     def load_classes(self):
         classes = self.class_repo.get_all()
         self.class_dropdown.options = [
@@ -78,7 +115,19 @@ class CarsView(ft.Container):
         ]
 
     def refresh_table(self):
-        cars = self.car_repo.get_all()
+        if not self.classfilter.value and not self.carfilter.value:
+            cars = self.car_repo.get_all()
+        elif self.classfilter.value and not self.carfilter.value:
+            cars = self.car_repo.get_by_class(int(self.classfilter.value))
+        elif self.carfilter.value and not self.classfilter.value:
+            cars = [self.car_repo.get_by_id(int(self.carfilter.value))]
+        else:
+            car=self.car_repo.get_by_id(int(self.carfilter.value))
+            if car.carclass_id == int(self.classfilter.value):
+                cars=[car]
+            else:
+                cars=[]
+        
 
         classes = {
             c.id: c.name

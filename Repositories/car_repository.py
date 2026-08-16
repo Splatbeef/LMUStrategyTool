@@ -141,3 +141,28 @@ class CarRepository:
                 fuel_capacity=row[3],
                 ve=bool(row[4])
             )
+
+    def get_by_class(self, carclass_id) -> list[Car]:
+        with self.db.get_connection() as conn:
+            cursor = conn.cursor()
+
+            rows = cursor.execute(
+                """
+                SELECT id, name, carclass_id, fuel_capacity, ve
+                FROM cars
+                WHERE carclass_id = ?
+                ORDER BY name
+                """,
+                (carclass_id,)
+            ).fetchall()
+
+        return [
+            Car(
+                id=row[0],
+                name=row[1],
+                carclass_id=row[2],
+                fuel_capacity=row[3],
+                ve=bool(row[4])
+            )
+            for row in rows
+        ]
