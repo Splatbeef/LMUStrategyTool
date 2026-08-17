@@ -11,3 +11,6 @@ Later
 - Add custom RacePlans
     - Repo & Dataclass
     - StintBuilderView
+
+pyinstaller --onefile --windowed --name LMUStrategyTool main.py 
+pyinstaller --onedir --windowed --name LMUStrategyTool main.py 

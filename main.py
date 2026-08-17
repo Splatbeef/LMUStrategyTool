@@ -17,6 +17,7 @@ from views.fuelusageview import *
 from views.referenceview import *
 from views.laptimesview import *
 from views.settingsview import *
+from views.homeview import *
 
 
 class MainApp:
@@ -110,7 +111,7 @@ class MainApp:
                 self.show_settings()
 
     def show_home(self):
-        self.content.content = ft.Text("Home")
+        self.content.content = HomeView(self.repos)
         self.page.update()
 
     def show_strategy(self):
