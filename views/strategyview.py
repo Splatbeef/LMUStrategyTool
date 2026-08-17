@@ -15,6 +15,7 @@ class StrategyView(ft.Container):
         self.fuel_repo = repos.fuel
         self.reference_repo = repos.reference
         self.times_repo = repos.laptime
+        self.settings_repo=repos.settings
         self.stratservice = StrategyService(repos)
         self.referenceservice = ReferenceService(repos)
         
@@ -297,27 +298,27 @@ class StrategyView(ft.Container):
         trackstr = f"{track.name}" if len(track.layout)==0 else f"{track.name} ({track.layout})"
 
         self.racedetails=ft.Column([
-            ft.Text("Race Details",size=20,weight=ft.FontWeight.BOLD),
-            ft.Text(f"Circuit: {trackstr}"),
-            ft.Text(f"{plan.race_laps} Laps"),
-            ft.Text(f"{len(plan.stints)} Stints"),
-            ft.Text(f"{plan.pit_stops} Pit Stops")
+            ft.Text("Race Details",size=24,weight=ft.FontWeight.BOLD),
+            ft.Text(f"Circuit: {trackstr}", size=20),
+            ft.Text(f"{plan.race_laps} Laps", size=20),
+            ft.Text(f"{len(plan.stints)} Stints", size=20),
+            ft.Text(f"{plan.pit_stops} Pit Stops", size=20)
         ],
         expand=1)
 
         laptimes=[]
-        laptimes.append(ft.Text("Laptimes",size=20,weight=ft.FontWeight.BOLD))
+        laptimes.append(ft.Text("Laptimes",size=24,weight=ft.FontWeight.BOLD))
         laptimes+=self.get_laptimes(strategy)
         self.laptimes=ft.Column(laptimes, expand=1)
 
         
         qualcontrols=[]
-        qualcontrols.append(ft.Text("Qualifying",size=20,weight=ft.FontWeight.BOLD))
-        qualcontrols.append(ft.Text(f"{qualiplan.laps} Laps"))
-        qualcontrols.append(ft.Text(f"Fuel Usage: {round(qualiplan.fuel_usage,2)}L per lap"))
-        qualcontrols.append(ft.Text(f"Fuel Needed: {qualiplan.fuel_needed}L"))
+        qualcontrols.append(ft.Text("Qualifying",size=24,weight=ft.FontWeight.BOLD))
+        qualcontrols.append(ft.Text(f"{qualiplan.laps} Laps", size=20))
+        qualcontrols.append(ft.Text(f"Fuel Usage: {round(qualiplan.fuel_usage,2)}L per lap", size=20))
+        qualcontrols.append(ft.Text(f"Fuel Needed: {qualiplan.fuel_needed}L", size=20))
         if qualiplan.fuel_ratio is not None:
-            qualcontrols.append(ft.Text(f"Fuel Ratio: {math.ceil(qualiplan.fuel_ratio*100)/100} with 100% VE"))
+            qualcontrols.append(ft.Text(f"Fuel Ratio: {math.ceil(qualiplan.fuel_ratio*100)/100} with 100% VE", size=20))
         self.qualiplan = ft.Column(qualcontrols,
                 expand=1)
 
@@ -333,19 +334,19 @@ class StrategyView(ft.Container):
 
         self.stint_table=ft.DataTable(
             columns=[
-                ft.DataColumn(ft.Text("Stint")),
-                ft.DataColumn(ft.Text("Laps")),
-                ft.DataColumn(ft.Text("Start Lap")),
-                ft.DataColumn(ft.Text("End Lap"))
+                ft.DataColumn(ft.Text("Stint", size=24)),
+                ft.DataColumn(ft.Text("Laps", size=24)),
+                ft.DataColumn(ft.Text("Start Lap", size=24)),
+                ft.DataColumn(ft.Text("End Lap", size=24))
             ]
         )
         if car.ve:
-            self.stint_table.columns.append(ft.DataColumn(ft.Text("Total VE")))
-            self.stint_table.columns.append(ft.DataColumn(ft.Text("% VE/Lap")))
-            self.stint_table.columns.append(ft.DataColumn(ft.Text("Fuel Ratio")))
+            self.stint_table.columns.append(ft.DataColumn(ft.Text("Total VE", size=24)))
+            self.stint_table.columns.append(ft.DataColumn(ft.Text("% VE/Lap", size=24)))
+            self.stint_table.columns.append(ft.DataColumn(ft.Text("Fuel Ratio", size=24)))
         else:
-            self.stint_table.columns.append(ft.DataColumn(ft.Text("Total Fuel")))
-            self.stint_table.columns.append(ft.DataColumn(ft.Text("L/Lap")))
+            self.stint_table.columns.append(ft.DataColumn(ft.Text("Total Fuel", size=24)))
+            self.stint_table.columns.append(ft.DataColumn(ft.Text("L/Lap", size=24)))
 
         self.stints = ft.Column([
             self.stint_table
@@ -380,19 +381,19 @@ class StrategyView(ft.Container):
         for stint in stints:
             row=ft.DataRow(
                 cells=[
-                    ft.DataCell(ft.Text(str(stint.stint_number))),
-                    ft.DataCell(ft.Text(f"{stint.laps} Laps")),
-                    ft.DataCell(ft.Text(f"Lap {stint.start_lap}")),
-                    ft.DataCell(ft.Text(f"Lap {stint.end_lap}")),
+                    ft.DataCell(ft.Text(str(stint.stint_number), size=20)),
+                    ft.DataCell(ft.Text(f"{stint.laps} Laps", size=20)),
+                    ft.DataCell(ft.Text(f"Lap {stint.start_lap}", size=20)),
+                    ft.DataCell(ft.Text(f"Lap {stint.end_lap}", size=20)),
                 ]
             )
             if car.ve:
-                row.cells.append(ft.DataCell(ft.Text(f"{stint.ve_used} %")))
-                row.cells.append(ft.DataCell(ft.Text(f"{round(stint.ve_per_lap, 2)}")))
-                row.cells.append(ft.DataCell(ft.Text(f"{math.ceil(stint.fuel_ratio*100)/100}")))
+                row.cells.append(ft.DataCell(ft.Text(f"{stint.ve_used} %", size=20)))
+                row.cells.append(ft.DataCell(ft.Text(f"{round(stint.ve_per_lap, 2)}", size=20)))
+                row.cells.append(ft.DataCell(ft.Text(f"{math.ceil(stint.fuel_ratio*100)/100}", size=20)))
             else:
-                row.cells.append(ft.DataCell(ft.Text(f"{stint.fuel_used} L")))
-                row.cells.append(ft.DataCell(ft.Text(f"{round(stint.fuel_per_lap,2)}")))
+                row.cells.append(ft.DataCell(ft.Text(f"{stint.fuel_used} L", size=20)))
+                row.cells.append(ft.DataCell(ft.Text(f"{round(stint.fuel_per_lap,2)}", size=20)))
 
             self.stint_table.rows.append(row)
 
@@ -418,27 +419,94 @@ class StrategyView(ft.Container):
         track = self.track_repo.get_by_id(strategy.track_id)
         car = self.car_repo.get_by_id(strategy.car_id)
         reference = self.reference_repo.get_best_reference(strategy.track_id, car.carclass_id)
-        reference_str = self.referenceservice.text_from_laptime(reference.laptime)
+        if reference is not None:
+            reference_str = self.referenceservice.text_from_laptime(reference.laptime)
         laptimes.append(ft.Text(f"Reference Time: {reference_str}"))
+
+        setting = self.settings_repo.get_by_key("Laptime Sessiontypes")
+        if setting.value_int==1:
+            practicetime = self.times_repo.get_by_track_car_session(track.id, car.id, "Practice")
+            if practicetime is not None:
+                practicetimestr = self.referenceservice.text_from_laptime(practicetime.laptime)
+                if reference is not None:
+                    laptimes.append(
+                        ft.Row([
+                            ft.Text(f"Practice PB: {practicetimestr}"),
+                            LapTimePerc(practicetime.laptime, reference.laptime)
+                        ])
+                    )
+                else:
+                    laptimes.append(
+                        ft.Row([
+                            ft.Text(f"Practice PB: {practicetimestr}")
+                        ])
+                    )
+        elif setting.value_int == 2:
+            qualitime = self.times_repo.get_by_track_car_session(track.id, car.id, "Qualifying Practice")
+            if qualitime is not None:
+                qualitimestr = self.referenceservice.text_from_laptime(qualitime.laptime)
+                if reference is not None:
+                    laptimes.append(
+                        ft.Row([
+                            ft.Text(f"Qualifying Practice PB: {qualitimestr}"),
+                            LapTimePerc(qualitime.laptime, reference.laptime)
+                        ])
+                    )
+                else:
+                    laptimes.append(
+                        ft.Row([
+                            ft.Text(f"Qualifying Practice PB: {qualitimestr}")
+                        ])
+                    )
+            racetime = self.times_repo.get_by_track_car_session(track.id, car.id, "Race Practice")
+            if racetime is not None:
+                racetimestr = self.referenceservice.text_from_laptime(racetime.laptime)
+                if reference is not None:
+                    laptimes.append(
+                        ft.Row([
+                            ft.Text(f"Race Practice PB: {racetimestr}"),
+                            LapTimePerc(racetime.laptime, reference.laptime)
+                        ])
+                    )
+                else:
+                    laptimes.append(
+                        ft.Row([
+                            ft.Text(f"Race Practice PB: {racetimestr}")
+                        ])
+                    )
 
         qualitime = self.times_repo.get_by_track_car_session(track.id, car.id, "Qualifying")
         if qualitime is not None:
             qualitimestr = self.referenceservice.text_from_laptime(qualitime.laptime)
-            laptimes.append(
-                ft.Row([
-                    ft.Text(f"Qualifying PB: {qualitimestr}"),
-                    LapTimePerc(qualitime.laptime, reference.laptime)
-                ])
-            )
+            if reference is not None:
+                laptimes.append(
+                    ft.Row([
+                        ft.Text(f"Qualifying PB: {qualitimestr}"),
+                        LapTimePerc(qualitime.laptime, reference.laptime)
+                    ])
+                )
+            else:
+                laptimes.append(
+                    ft.Row([
+                        ft.Text(f"Qualifying PB: {qualitimestr}")
+                    ])
+                )
         racetime = self.times_repo.get_by_track_car_session(track.id, car.id, "Race")
         if racetime is not None:
             racetimestr = self.referenceservice.text_from_laptime(racetime.laptime)
-            laptimes.append(
-                ft.Row([
-                    ft.Text(f"Race PB: {racetimestr}"),
-                    LapTimePerc(racetime.laptime, reference.laptime)
-                ])
-            )
+            if reference is not None:
+                laptimes.append(
+                    ft.Row([
+                        ft.Text(f"Race PB: {racetimestr}"),
+                        LapTimePerc(racetime.laptime, reference.laptime)
+                    ])
+                )
+            else:
+                laptimes.append(
+                    ft.Row([
+                        ft.Text(f"Race PB: {racetimestr}")
+                    ])
+                )
         return laptimes
 
     def load_cars(self):

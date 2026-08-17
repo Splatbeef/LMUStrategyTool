@@ -199,12 +199,12 @@ class StrategyService:
             return capacity/stint_length
         return usage
 
-    def build_stints(self, strategy: Strategy, stint_lengths: list[int], target_stint_length: int | None = None) -> list[Stint]:
+    def build_stints(self, strategy: Strategy, stint_lengths: list[int]) -> list[Stint]:
         stints=[]
         laptime = self.get_laptime(strategy)
         laps_done = 0
         for i, laps in enumerate(stint_lengths, start=1):
-            target_length = target_stint_length if target_stint_length is not None else laps
+            target_length = laps
 
             fuel_capacity = self.get_fuel_capacity(strategy)
             ve_usage = self.get_stint_ve_usage(strategy, target_length)
@@ -257,8 +257,7 @@ class StrategyService:
 
         stints = self.build_stints(
             strategy=strategy,
-            stint_lengths=stint_lengths,
-            target_stint_length=target_length
+            stint_lengths=stint_lengths
         )
         return RacePlan(
             name = "Push Plan",
@@ -279,8 +278,7 @@ class StrategyService:
 
         stints = self.build_stints(
             strategy=strategy,
-            stint_lengths=stint_lengths,
-            target_stint_length=target_length
+            stint_lengths=stint_lengths
         )
         return RacePlan(
             name = f"Plus {plus} Plan",
