@@ -1,6 +1,7 @@
 import sqlite3
 from pathlib import Path
 import os
+import sys
 
 
 class DatabaseService:
@@ -16,11 +17,14 @@ class DatabaseService:
         return sqlite3.connect(self.db_path)
 
     def get_db_path(self) -> str:
-        appdata=os.getenv("APPDATA")
-        data_dir = Path(appdata) / "LMU Strategy Tool"
-        data_dir.mkdir(parents=True, exist_ok=True)
+        if getattr(sys, "frozen", False):
+            appdata=os.getenv("APPDATA")
+            DATA_DIR = Path(appdata) / "LMU Strategy Tool"
+        else:
+            DATA_DIR = Path(__file__).resolve().parent
+        DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-        return str(data_dir / "database.db")
+        return str(DATA_DIR / "database.db")
 
     def create_tables(self):
         with self.get_connection() as conn:

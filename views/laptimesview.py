@@ -60,16 +60,17 @@ class LapTimesView(ft.Container):
         )
 
     def make_input_fields(self) -> ft.Column:
-        self.car_field = ft.Dropdown(label="Car")
-        self.track_field = ft.Dropdown(label="Track")
+        self.car_field = ft.Dropdown(label="Car", editable=True, enable_filter=True)
+        self.track_field = ft.Dropdown(label="Track", editable=True, enable_filter=True)
         self.time_field = ft.TextField(label="Laptime (00:00.000)")
         self.session_field = ft.Dropdown(label="Session", options=[
             ft.dropdown.Option(s) for s in self.sessions
         ])
         #Check settings for practice laptime option!
 
-        self.save_button = ft.Button(content="Save", on_click=self.save_laptime)
-        self.delete_button = ft.Button(content="Delete", on_click=self.delete_laptime)
+        self.add_button = ft.Button(content="Add", on_click=self.add_laptime)
+        self.save_button = ft.Button(content="Save", on_click=self.save_laptime, disabled=True)
+        self.delete_button = ft.Button(content="Delete", on_click=self.delete_laptime, disabled=True)
         self.clear_button = ft.Button(content="Clear", on_click=self.clear_form)
 
         self.load_cars()
@@ -81,6 +82,7 @@ class LapTimesView(ft.Container):
             self.time_field,
             self.session_field,
             ft.Row([
+                self.add_button,
                 self.save_button,
                 self.delete_button,
                 self.clear_button
@@ -125,7 +127,7 @@ class LapTimesView(ft.Container):
             )
 
     def filters(self):
-        self.trackfilter = ft.Dropdown(label="Track", on_select=self.refresh_table, editable=True, enable_search=True)
+        self.trackfilter = ft.Dropdown(label="Track", on_select=self.refresh_table, editable=True, enable_filter=True)
         tracks = self.repo_track.get_all()
         for c in tracks:
             if len(c.layout)>0:
@@ -139,7 +141,7 @@ class LapTimesView(ft.Container):
                 ) 
             )
 
-        self.carfilter = ft.Dropdown(label="Car", on_select=self.refresh_table, editable=True, enable_search=True)
+        self.carfilter = ft.Dropdown(label="Car", on_select=self.refresh_table, editable=True, enable_filter=True)
         cars = self.repo_car.get_all()
         self.carfilter.options = [
             ft.dropdown.Option(
@@ -248,7 +250,7 @@ class LapTimesView(ft.Container):
         if self.selected_laptime is not None:
             id = self.selected_laptime.id
         else:
-            id=None
+            return
         car = self.repo_car.get_by_id(int(self.car_field.value))
         track = self.repo_track.get_by_id(int(self.track_field.value))
         time = self.parse_laptime(self.time_field.value)
@@ -272,11 +274,55 @@ class LapTimesView(ft.Container):
             content=ft.Text("Laptime saved succesfully!")
         )
 
-        if self.selected_laptime is not None:
-            self.repo_times.update(laptime)
-        else:
-            self.repo_times.add(laptime)
-            dialog.content=ft.Text("Laptime added succesfully!")
+        self.repo_times.update(laptime)
+
+        self.clear_form()
+        self.refresh_table()
+        self.update()
+        self.page.show_dialog(dialog)
+        self.page.update()
+
+    def add_laptime(self, e=None):
+        if not self.checks():
+            return
+        car = self.repo_car.get_by_id(int(self.car_field.value))
+        track = self.repo_track.get_by_id(int(self.track_field.value))
+        time = self.parse_laptime(self.time_field.value)
+        session = self.session_field.value
+        today = dt.date.today()
+
+        laptime = LapTime(
+            id=None,
+            track_id = track.id,
+            car_id = car.id,
+            laptime=time,
+            date_set = today,
+            sessiontype = session
+        )
+
+        
+        if not self.repo_times.get_by_track_car_session(track.id, car.id, session):
+            dialog = ft.AlertDialog(
+                modal=False,
+                alignment=ft.Alignment.CENTER,
+                title=ft.Text(f"Already Exists"),
+                title_padding = ft.Padding.all(25),
+                content=ft.Column([
+                    ft.Text("Laptime for this car, track, and session already exists!"),
+                    ft.Text("Please select that laptime and update it using 'Save'.")
+                ])
+            )
+            return
+
+        self.repo_times.add(laptime)
+
+        dialog = ft.AlertDialog(
+            modal=False,
+            alignment=ft.Alignment.CENTER,
+            title=ft.Text(f"Added Succesfully"),
+            title_padding = ft.Padding.all(25),
+            content=ft.Text("Laptime added succesfully!")
+        )
 
         self.clear_form()
         self.refresh_table()
@@ -379,6 +425,8 @@ class LapTimesView(ft.Container):
         self.track_field.value= str(laptime.track_id)
         self.time_field.value = self.text_from_laptime(laptime.laptime)
         self.session_field.value = laptime.sessiontype
+        self.delete_button.disabled=False
+        self.save_button.disabled=False
         self.update()
 
     def clear_form(self, e=None):
@@ -387,4 +435,6 @@ class LapTimesView(ft.Container):
         self.time_field.value=""
         self.session_field.value=""
         self.selected_laptime=None
+        self.save_button.disabled=True
+        self.delete_button.disabled=True
         self.update()

@@ -2,3 +2,9 @@
 /data
 /dist
 /build
+/repositories/__pycache__
+/services/__pycache__
+/__pycache__
+/controls/__pycache__
+services/database.db
+/views/__pycache__

@@ -62,7 +62,7 @@ class TracksView(ft.Container):
         )
 
     def filters(self):
-        self.trackfilter = ft.Dropdown(label="Track", on_select=self.refresh_table, editable=True, enable_search=True)
+        self.trackfilter = ft.Dropdown(label="Track", on_select=self.refresh_table, editable=True, enable_filter=True)
         tracks = self.track_repo.get_all()
         tracknames = sorted(list(set([t.name for t in tracks])))
         self.trackfilter.options = [

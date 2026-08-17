@@ -71,7 +71,7 @@ class CarsView(ft.Container):
         )
 
     def filters(self):
-        self.carfilter = ft.Dropdown(label="Car", on_select=self.refresh_table, editable=True, enable_search=True)
+        self.carfilter = ft.Dropdown(label="Car", on_select=self.refresh_table, editable=True, enable_filter=True)
         cars = self.car_repo.get_all()
         self.carfilter.options = [
             ft.dropdown.Option(
@@ -80,7 +80,7 @@ class CarsView(ft.Container):
             ) 
             for c in cars
         ]
-        self.classfilter = ft.Dropdown(label="Class", on_select=self.refresh_table, editable=True, enable_search=True)
+        self.classfilter = ft.Dropdown(label="Class", on_select=self.refresh_table, editable=True, enable_filter=True)
         classes = self.class_repo.get_all()
         self.classfilter.options = [
             ft.dropdown.Option(

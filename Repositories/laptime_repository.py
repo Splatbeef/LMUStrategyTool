@@ -31,7 +31,7 @@ class LapTimeRepository:
                 """
                 SELECT id, track_id, car_id, laptime, date_set, sessiontype
                 FROM laptimes
-                ORDER BY track_id
+                ORDER BY car_id
                 """
             ).fetchall()
 
@@ -143,7 +143,7 @@ class LapTimeRepository:
                 SELECT id, track_id, car_id, laptime, date_set, sessiontype
                 FROM laptimes
                 WHERE track_id = ?
-                ORDER BY laptime
+                ORDER BY car_id
                 """,
                 (track_id,)
             ).fetchall()
@@ -169,7 +169,7 @@ class LapTimeRepository:
                 SELECT id, track_id, car_id, laptime, date_set, sessiontype
                 FROM laptimes
                 WHERE car_id = ?
-                ORDER BY laptime
+                ORDER BY track_id
                 """,
                 (car_id,)
             ).fetchall()
@@ -195,7 +195,7 @@ class LapTimeRepository:
                 SELECT id, track_id, car_id, laptime, date_set, sessiontype
                 FROM laptimes
                 WHERE sessiontype = ?
-                ORDER BY laptime
+                ORDER BY car_id
                 """,
                 (session,)
             ).fetchall()
@@ -257,7 +257,7 @@ class LapTimeRepository:
                 FROM laptimes
                 WHERE track_id = ?
                 AND sessiontype = ?
-                ORDER BY laptime
+                ORDER BY car_id
                 """,
                 (track_id, session)
             ).fetchall()
@@ -288,7 +288,7 @@ class LapTimeRepository:
                 FROM laptimes
                 WHERE car_id = ?
                 AND sessiontype = ?
-                ORDER BY laptime
+                ORDER BY track_id
                 """,
                 (car_id, session)
             ).fetchall()

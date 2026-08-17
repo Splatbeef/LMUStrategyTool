@@ -10,8 +10,8 @@ class FuelUsageView(ft.Container):
         self.fuel_repo = repos.fuel
         self.track_repo = repos.track
 
-        self.name_selected = ft.Dropdown(label="Select Car")
-        self.track_selected = ft.Dropdown(label="Select Track")
+        self.name_selected = ft.Dropdown(label="Select Car", editable=True, enable_filter=True)
+        self.track_selected = ft.Dropdown(label="Select Track", editable=True, enable_filter=True)
         self.fuel_field = ft.TextField(label="Fuel Usage")
         self.ve_field = ft.TextField(label="VE Usage")
 
@@ -110,7 +110,7 @@ class FuelUsageView(ft.Container):
 
     def filters(self):
 
-        self.trackfilter = ft.Dropdown(label="Track", on_select=self.refresh_table, editable=True, enable_search=True)
+        self.trackfilter = ft.Dropdown(label="Track", on_select=self.refresh_table, editable=True, enable_filter=True)
         tracks = self.track_repo.get_all()
         for c in tracks:
             if len(c.layout)>0:
@@ -124,7 +124,7 @@ class FuelUsageView(ft.Container):
                 ) 
             )
 
-        self.carfilter = ft.Dropdown(label="Car", on_select=self.refresh_table, editable=True, enable_search=True)
+        self.carfilter = ft.Dropdown(label="Car", on_select=self.refresh_table, editable=True, enable_filter=True)
         cars = self.car_repo.get_all()
         self.carfilter.options = [
             ft.dropdown.Option(

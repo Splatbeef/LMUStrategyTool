@@ -41,7 +41,7 @@ class StrategyView(ft.Container):
     def filters(self):
         self.namefilter = ft.TextField(label="Name", on_change=self.refresh_library)
 
-        self.trackfilter = ft.Dropdown(label="Track", on_select=self.refresh_library, editable=True, enable_search=True)
+        self.trackfilter = ft.Dropdown(label="Track", on_select=self.refresh_library, editable=True, enable_filter=True)
         tracks = self.track_repo.get_all()
         for c in tracks:
             if len(c.layout)>0:
@@ -55,7 +55,7 @@ class StrategyView(ft.Container):
                 ) 
             )
 
-        self.carfilter = ft.Dropdown(label="Car", on_select=self.refresh_library, editable=True, enable_search=True)
+        self.carfilter = ft.Dropdown(label="Car", on_select=self.refresh_library, editable=True, enable_filter=True)
         cars = self.car_repo.get_all()
         self.carfilter.options = [
             ft.dropdown.Option(
@@ -157,11 +157,11 @@ class StrategyView(ft.Container):
         )
 
         self.track_dropdown = ft.Dropdown(
-            label="Track"
+            label="Track", editable=True, enable_filter=True
         )
 
         self.car_dropdown = ft.Dropdown(
-            label="Car"
+            label="Car", editable=True, enable_filter=True
         )
 
         self.race_minutes = ft.TextField(

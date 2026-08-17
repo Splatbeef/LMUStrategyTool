@@ -84,7 +84,7 @@ class ReferenceView(ft.Container):
 
     def filters(self):
 
-        self.trackfilter = ft.Dropdown(label="Track", on_select=self.refresh_table, editable=True, enable_search=True)
+        self.trackfilter = ft.Dropdown(label="Track", on_select=self.refresh_table, editable=True, enable_filter=True)
         tracks = self.track_repo.get_all()
         for c in tracks:
             if len(c.layout)>0:
@@ -98,7 +98,7 @@ class ReferenceView(ft.Container):
                 ) 
             )
 
-        self.classfilter = ft.Dropdown(label="Class", on_select=self.refresh_table, editable=True, enable_search=True)
+        self.classfilter = ft.Dropdown(label="Class", on_select=self.refresh_table, editable=True, enable_filter=True)
         classes = self.class_repo.get_all()
         self.classfilter.options = [
             ft.dropdown.Option(
@@ -167,7 +167,7 @@ class ReferenceView(ft.Container):
 
         track_dropdown = ft.Dropdown(
             label="Select Existing Track",
-            options=[])
+            options=[], editable=True, enable_filter=True)
         for t in self.track_repo.get_all():
             if t.layout != "":
                 track_dropdown.options.append(ft.dropdown.Option(
@@ -250,7 +250,7 @@ class ReferenceView(ft.Container):
     
             car_dropdown = ft.Dropdown(
                 label="Select Existing Car",
-                options=[])
+                options=[], editable=True, enable_filter=True)
             for c in sorted(self.car_repo.get_all(), key=lambda car: car.name.lower()):
                 car_dropdown.options.append(ft.dropdown.Option(
                     key=str(c.id),
