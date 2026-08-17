@@ -1,16 +1,18 @@
 1.0 Release
-- Home Page
+- Check if reference exists, or require one of the overrides?
 - Icon
 - Make exe
 - Make installer
 - Check README?
 
 Later
-- Add estimated pitstop lengths to calculate a revised race distance
+- Better calculations
+    - Add estimated pitstop lengths
+    - Add more sophisticated estimation of race pace
+    - Factor in higher class?
 - Add tire changes
 - Add custom RacePlans
     - Repo & Dataclass
     - StintBuilderView
 
-pyinstaller --onefile --windowed --name LMUStrategyTool main.py 
 pyinstaller --onedir --windowed --name LMUStrategyTool main.py 
