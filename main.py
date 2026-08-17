@@ -194,10 +194,10 @@ def seed_database(repos: Repositories):
     seed_classes()
 
     if getattr(sys, "frozen", False):
-        APP_DIR = Path(sys.executable).parent
+        BASE_DIR = Path(sys._MEIPASS)
     else:
-        APP_DIR = Path(__file__).resolve().parent
-    SEED_DIR = APP_DIR / "seeding_data"
+        BASE_DIR = Path(__file__).resolve().parent
+    SEED_DIR = BASE_DIR / "seeding_data"
 
     with open(SEED_DIR / 'cars.json', encoding="utf-8") as f:
         dct = json.load(f)
