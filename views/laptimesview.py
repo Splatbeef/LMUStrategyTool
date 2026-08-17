@@ -212,24 +212,20 @@ class LapTimesView(ft.Container):
             track = self.repo_track.get_by_id(laptime.track_id)
             trackstr = track.name if track.layout == "" else f"{track.name} ({track.layout})"
             reference = self.repo_reference.get_best_reference(laptime.track_id, car.carclass_id)
-            if reference is None:
-                dialog = ft.AlertDialog(
-                    modal=False,
-                    alignment=ft.Alignment.CENTER,
-                    title=ft.Text(f"Missing Reference"),
-                    title_padding = ft.Padding.all(25),
-                    content=ft.Text(f"Missing reference for {carclass.name} on {trackstr}. Please update references")
+            if reference is not None:
+                perc = LapTimePerc(laptime.laptime, reference.laptime)
+                laptimerow = ft.Row(
+                    [
+                        ft.Text(self.text_from_laptime(laptime.laptime)),
+                        perc
+                    ]
                 )
-                self.page.show_dialog(dialog)
-                self.page.update()
-                return
-            perc = LapTimePerc(laptime.laptime, reference.laptime)
-            laptimerow = ft.Row(
-                [
-                    ft.Text(self.text_from_laptime(laptime.laptime)),
-                    perc
-                ]
-            )
+            else:
+                laptimerow = ft.Row(
+                    [
+                        ft.Text(self.text_from_laptime(laptime.laptime))
+                    ]
+                )
 
             self.laptimes_table.rows.append(
                 ft.DataRow(
