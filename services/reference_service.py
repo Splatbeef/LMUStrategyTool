@@ -5,12 +5,7 @@ import datetime as dt
 import math
 import requests
 
-from Repositories.car_repository import CarRepository
-from Repositories.carclass_repository import CarClassRepository
-from Repositories.referencetime_repository import ReferenceTimeRepository
-from Repositories.track_repository import TrackRepository
-from Repositories.alias_repository import *
-from Repositories.repositories import *
+from repositories.repositories import *
 
 
 class ReferenceService:

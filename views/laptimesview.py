@@ -1,10 +1,10 @@
 import flet as ft
 import datetime as dt
 import math
-from Repositories.repositories import *
+from repositories.repositories import *
 from models import *
 from services.strategy_service import *
-from services.referenceservice import *
+from services.reference_service import *
 from controls.laptime_perc import *
 
 class LapTimesView(ft.Container):

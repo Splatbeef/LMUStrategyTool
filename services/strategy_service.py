@@ -1,4 +1,4 @@
-from Repositories.repositories import Repositories
+from repositories.repositories import Repositories
 from models import *
 import math
 

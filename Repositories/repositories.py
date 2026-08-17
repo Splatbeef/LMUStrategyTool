@@ -1,12 +1,12 @@
-from Repositories.carclass_repository import CarClassRepository
-from Repositories.track_repository import TrackRepository
-from Repositories.car_repository import CarRepository
-from Repositories.laptime_repository import LapTimeRepository
-from Repositories.referencetime_repository import ReferenceTimeRepository
-from Repositories.fuel_repository import FuelRepository
-from Repositories.strategy_repository import StrategyRepository
-from Repositories.alias_repository import *
-from Repositories.settings_repository import SettingsRepository
+from repositories.carclass_repository import CarClassRepository
+from repositories.track_repository import TrackRepository
+from repositories.car_repository import CarRepository
+from repositories.laptime_repository import LapTimeRepository
+from repositories.referencetime_repository import ReferenceTimeRepository
+from repositories.fuel_repository import FuelRepository
+from repositories.strategy_repository import StrategyRepository
+from repositories.alias_repository import *
+from repositories.settings_repository import SettingsRepository
 
 class Repositories:
 

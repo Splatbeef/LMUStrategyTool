@@ -1,6 +1,6 @@
 import flet as ft
 
-from Repositories.repositories import *
+from repositories.repositories import *
 from models import Setting
 
 class SettingsView(ft.Container):

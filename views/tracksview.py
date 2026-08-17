@@ -1,6 +1,6 @@
 import flet as ft
 from models import Track
-from Repositories.track_repository import TrackRepository
+from repositories.track_repository import TrackRepository
 
 
 class TracksView(ft.Container):

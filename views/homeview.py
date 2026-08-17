@@ -1,7 +1,7 @@
 import flet as ft
 import datetime as dt
 
-from Repositories.repositories import *
+from repositories.repositories import *
 
 class HomeView(ft.Container):
     def __init__(self, repos: Repositories):

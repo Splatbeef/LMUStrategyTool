@@ -4,11 +4,10 @@ import flet as ft
 import datetime as dt
 
 from models import *
-from Repositories.repositories import *
-from Repositories.carclass_repository import *
+from repositories.repositories import *
 
 from services.database_service import *
-from services.referenceservice import *
+from services.reference_service import *
 
 from views.strategyview import *
 from views.carsview import *

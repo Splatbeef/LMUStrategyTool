@@ -1,8 +1,8 @@
 import flet as ft
-from Repositories.repositories import *
+from repositories.repositories import *
 from models import *
 from services.strategy_service import *
-from services.referenceservice import *
+from services.reference_service import *
 from controls.laptime_perc import *
 
 class StrategyView(ft.Container):
@@ -534,6 +534,50 @@ class StrategyView(ft.Container):
             self.page.show_dialog(dialog)
             self.page.update()
             return False
+
+        if self.laps_override.value:
+            try:
+                int(self.laps_override.value)
+            except:
+                dialog = ft.AlertDialog(
+                    modal=False,
+                    alignment=ft.Alignment.CENTER,
+                    title=ft.Text(f"Laps Override Invalid"),
+                    title_padding = ft.Padding.all(25),
+                    content=ft.Text("The laps override must be integer")
+                )
+                self.page.show_dialog(dialog)
+                self.page.update()
+                return False
+        elif self.laptime_override.value:
+            try:
+                self.parse_laptime(self.laptime_override.value)
+            except:
+                dialog = ft.AlertDialog(
+                    modal=False,
+                    alignment=ft.Alignment.CENTER,
+                    title=ft.Text(f"Laptime Override Invalid"),
+                    title_padding = ft.Padding.all(25),
+                    content=ft.Text("The laptime override must be in a valid laptime format (00:00.000)")
+                )
+                self.page.show_dialog(dialog)
+                self.page.update()
+                return False
+
+
+        car = self.car_repo.get_by_id(carid)
+        if not self.reference_repo.exists(trackid, car.carclass_id):
+            if not self.laptime_override.value and not self.laps_override.value:
+                dialog = ft.AlertDialog(
+                    modal=False,
+                    alignment=ft.Alignment.CENTER,
+                    title=ft.Text(f"No Reference"),
+                    title_padding = ft.Padding.all(25),
+                    content=ft.Text("No reference for that track/class combination. Please use an override instead.")
+                )
+                self.page.show_dialog(dialog)
+                self.page.update()
+                return False
 
         try:
             self.parse_racetime(self.race_minutes.value)

@@ -1,6 +1,6 @@
 import flet as ft
 from models import Car, CarAlias
-from Repositories.repositories import *
+from repositories.repositories import *
 
 
 class CarsView(ft.Container):

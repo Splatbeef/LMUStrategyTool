@@ -1,11 +1,7 @@
 import flet as ft
 
 from models import Car, FuelUsage, Track, CarClass
-from Repositories.repositories import *
-from Repositories.car_repository import CarRepository
-from Repositories.carclass_repository import CarClassRepository
-from Repositories.fuel_repository import FuelRepository
-from Repositories.track_repository import TrackRepository
+from repositories.repositories import *
 
 class FuelUsageView(ft.Container):
     def __init__(self, repos: Repositories):

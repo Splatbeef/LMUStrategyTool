@@ -1,9 +1,9 @@
 import flet as ft
 import datetime as dt
 
-from models import Car, Track, ReferenceTime
-from Repositories.repositories import *
-from services.referenceservice import *
+from models import Car, Track
+from repositories.repositories import *
+from services.reference_service import *
 
 class ReferenceView(ft.Container):
     def __init__(self, repos: Repositories):
