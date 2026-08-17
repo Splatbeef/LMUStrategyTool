@@ -301,7 +301,7 @@ class LapTimesView(ft.Container):
         )
 
         
-        if not self.repo_times.get_by_track_car_session(track.id, car.id, session):
+        if self.repo_times.get_by_track_car_session(track.id, car.id, session):
             dialog = ft.AlertDialog(
                 modal=False,
                 alignment=ft.Alignment.CENTER,
@@ -310,8 +310,11 @@ class LapTimesView(ft.Container):
                 content=ft.Column([
                     ft.Text("Laptime for this car, track, and session already exists!"),
                     ft.Text("Please select that laptime and update it using 'Save'.")
-                ])
+                ],
+                expand=False)
             )
+            self.page.show_dialog(dialog)
+            self.page.update()
             return
 
         self.repo_times.add(laptime)
