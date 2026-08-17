@@ -1,0 +1,184 @@
+{
+    "Hypercar": [
+        {
+            "name": "Ferrari 499P",
+            "fuel_capacity": 110,
+            "ve": true
+        },
+        {
+            "name": "Toyota GR010/TR010",
+            "fuel_capacity": 110,
+            "ve": true
+        },
+        {
+            "name": "Porsche 963",
+            "fuel_capacity": 110,
+            "ve": true
+        },
+        {
+            "name": "Genesis GMR001",
+            "fuel_capacity": 110,
+            "ve": true
+        },
+        {
+            "name": "Peugeot 9X8 EVO",
+            "fuel_capacity": 110,
+            "ve": true
+        },
+        {
+            "name": "Peugeot 9X8",
+            "fuel_capacity": 110,
+            "ve": true
+        },
+        {
+            "name": "Isotta Fraschini Tipo 6",
+            "fuel_capacity": 110,
+            "ve": true
+        },
+        {
+            "name": "Aston Martin Valkyrie LMH",
+            "fuel_capacity": 112,
+            "ve": true
+        },
+        {
+            "name": "Cadillac V-Series.R",
+            "fuel_capacity": 110,
+            "ve": true
+        },
+        {
+            "name": "Alpine A424",
+            "fuel_capacity": 110,
+            "ve": true
+        },
+        {
+            "name": "Lamborghini SC63",
+            "fuel_capacity": 110,
+            "ve": true
+        },
+        {
+            "name": "BMW M Hybrid V8 EVO",
+            "fuel_capacity": 110,
+            "ve": true
+        },
+        {
+            "name": "Glickenhaus SCG 007",
+            "fuel_capacity": 110,
+            "ve": true
+        },
+        {
+            "name": "Vanwall Vandervell 680",
+            "fuel_capacity": 110,
+            "ve": true
+        }
+    ],
+    "LMP2 (ELMS)": [
+        {
+            "name": "Oreca 07 Gibson (ELMS)",
+            "fuel_capacity": 75,
+            "ve": false
+        }
+    ],
+    "LMP2 (WEC)": [
+        {
+            "name": "Oreca 07 Gibson (WEC)",
+            "fuel_capacity": 63,
+            "ve": false
+        }
+    ],
+    "LMP3":[
+        {
+            "name": "Ligier JS P325",
+            "fuel_capacity": 100,
+            "ve": false
+        },
+        {
+            "name": "Duqueine D09",
+            "fuel_capacity": 100,
+            "ve": false
+        },
+        {
+            "name": "Ginetta G61-LT-P325-Evo",
+            "fuel_capacity": 100,
+            "ve": false
+        },
+        {
+            "name": "Adess AD25",
+            "fuel_capacity": 100,
+            "ve": false
+        }
+    ],
+    "LMGT3":[
+        {
+            "name": "Porsche 911 GT3 R LMGT3",
+            "fuel_capacity": 120,
+            "ve": true
+        },
+        {
+            "name": "Mercedes-AMG LMGT3",
+            "fuel_capacity": 120,
+            "ve": true
+        },
+        {
+            "name": "Lamborghini Huracan LMGT3 EVO2",
+            "fuel_capacity": 120,
+            "ve": true
+        },
+        {
+            "name": "Lexus RC-F LMGT3",
+            "fuel_capacity": 120,
+            "ve": true
+        },
+        {
+            "name": "Aston Martin Vantage AMR LMGT3",
+            "fuel_capacity": 120,
+            "ve": true
+        },
+        {
+            "name": "Ford Mustang LMGT3",
+            "fuel_capacity": 120,
+            "ve": true
+        },
+        {
+            "name": "Ferrari 296 LMGT3",
+            "fuel_capacity": 120,
+            "ve": true
+        },
+        {
+            "name": "McLaren 720s LMGT3 EVO",
+            "fuel_capacity": 120,
+            "ve": true
+        },
+        {
+            "name": "Chevrolet Corvette Z06 LMGT3.R",
+            "fuel_capacity": 120,
+            "ve": true
+        },
+        {
+            "name": "BMW M4 LMGT3",
+            "fuel_capacity": 120,
+            "ve": true
+        }
+    ],
+    "LMGTE": [
+        {
+            "name": "Porsche 911 RSR-19 GTE",
+            "fuel_capacity": 100,
+            "ve": false
+        },
+        {
+            "name": "Ferrari 488 GTE EVO",
+            "fuel_capacity": 86,
+            "ve": false
+        },
+        {
+            "name": "Chevrolet Corvette C8.R GTE",
+            "fuel_capacity": 91,
+            "ve": false
+        },
+        {
+            "name": "Aston Martin Vantage AMR GTE",
+            "fuel_capacity": 97,
+            "ve": false
+        }
+    ]
+}

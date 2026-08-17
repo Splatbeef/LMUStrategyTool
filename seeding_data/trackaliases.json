@@ -1,0 +1,126 @@
+{
+  "Silverstone International": {
+    "name": "Silverstone",
+    "layout": "International"
+  },
+  "Monza Curva Grande": {
+    "name": "Monza",
+    "layout": "Curva Grande"
+  },
+  "Laguna Seca": {
+    "name": "Laguna Seca",
+    "layout": ""
+  },
+  "Le Mans Mulsanne": {
+    "name": "Le Mans",
+    "layout": "Mulsanne"
+  },
+  "Silverstone National": {
+    "name": "Silverstone",
+    "layout": "National"
+  },
+  "Barcelona": {
+    "name": "Barcelona",
+    "layout": ""
+  },
+  "Interlagos": {
+    "name": "Interlagos",
+    "layout": ""
+  },
+  "Bahrain International": {
+    "name": "Bahrain",
+    "layout": ""
+  },
+  "Spa Francorchamps": {
+    "name": "Spa-Francorchamps",
+    "layout": ""
+  },
+  "Paul Ricard ELMS": {
+    "name": "Paul Ricard",
+    "layout": ""
+  },
+  "Bahrain Outer": {
+    "name": "Bahrain",
+    "layout": "Outer"
+  },
+  "Fuji Classic": {
+    "name": "Fuji",
+    "layout": "Classic"
+  },
+  "Bahrain Paddock": {
+    "name": "Bahrain",
+    "layout": "Paddock"
+  },
+  "Bahrain Endurance": {
+    "name": "Bahrain",
+    "layout": "Endurance"
+  },
+  "Silverstone WEC": {
+    "name": "Silverstone",
+    "layout": ""
+  },
+  "Paul Ricard 1A V2": {
+    "name": "Paul Ricard",
+    "layout": "1A-V2"
+  },
+  "Paul Ricard 1A": {
+    "name": "Paul Ricard",
+    "layout": "1A"
+  },
+  "Le Mans": {
+    "name": "Le Mans",
+    "layout": ""
+  },
+  "Monza": {
+    "name": "Monza",
+    "layout": ""
+  },
+  "Portimao": {
+    "name": "Portimao",
+    "layout": ""
+  },
+  "Paul Ricard 3A": {
+    "name": "Paul Ricard",
+    "layout": "3A"
+  },
+  "COTA": {
+    "name": "CotA",
+    "layout": ""
+  },
+  "Sebring": {
+    "name": "Sebring",
+    "layout": ""
+  },
+  "Qatar": {
+    "name": "Qatar",
+    "layout": ""
+  },
+  "Sebring School": {
+    "name": "Sebring",
+    "layout": "School"
+  },
+  "Imola": {
+    "name": "Imola",
+    "layout": ""
+  },
+  "Paul Ricard 1A V2 Short": {
+    "name": "Paul Ricard",
+    "layout": "1A-V2-Short"
+  },
+  "Daytona": {
+    "name": "Daytona",
+    "layout": ""
+  },
+  "COTA National": {
+    "name": "CotA",
+    "layout": "National"
+  },
+  "Qatar Short": {
+    "name": "Qatar",
+    "layout": "Short"
+  },
+  "Fuji": {
+    "name": "Fuji",
+    "layout": ""
+  }
+}
