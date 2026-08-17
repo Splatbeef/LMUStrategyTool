@@ -234,7 +234,7 @@ class FuelUsageView(ft.Container):
         self.track_selected.value = str(self.track.id)
 
         self.fuel_field.value=usage.fuel_usage
-        self.ve_field.value=usage.ve_usage if usage.ve_usage is not None else "No VE"
+        self.ve_field.value=usage.ve_usage if usage.ve_usage is not None else None
 
         self.edit_button.disabled = False
         self.delete_button.disabled = False
