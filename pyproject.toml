@@ -1,0 +1,37 @@
+[project]
+name = "LMUStrategyTool"
+version = "1.0.0"
+description = ""
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+    { name = "Splatbeef", email = "" }
+]
+dependencies = [
+    "flet>=0.86.5",
+    "requests",
+    "pandas",
+    "packaging"
+]
+
+[dependency-groups]
+dev = [
+    "flet-cli>=0.86.5",
+    "flet-desktop>=0.86.5",
+    "flet-web>=0.86.5",
+    # Integration testing with `flet test` / pytest. The `test` extra brings in
+    # pytest, pytest-asyncio and the screenshot-comparison dependencies.
+    "flet[test]>=0.86.5",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.flet]
+product = "LMU Strategy Tool"
+artifact = "LMUStrategyTool"
+
+[tool.flet.app]
+path = "."
+module = "main.py"
