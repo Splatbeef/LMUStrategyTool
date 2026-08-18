@@ -305,6 +305,7 @@ def seed_database(repos: Repositories):
 
 def main(page: ft.Page):
     page.title="LMU Strategy Tool"
+    page.window.icon="icon.ico"
 
     db=DatabaseService()
     repos = Repositories(db)
