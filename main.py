@@ -4,6 +4,9 @@ import datetime as dt
 import json
 import sys
 from pathlib import Path
+import requests
+from packaging.version import Version
+import webbrowser
 
 from models import *
 from repositories.repositories import *
@@ -245,7 +248,7 @@ def seed_database(repos: Repositories):
                 Setting(
                     id=None,
                     key="Version",
-                    value_str = version_number,
+                    value_str = APP_VERSION,
                     value_bool = None,
                     value_int = None,
                     value_float = None
@@ -317,5 +320,5 @@ def main(page: ft.Page):
         repos=repos)
 
 if __name__ == "__main__":
-    version_number="1.0.0"
+    APP_VERSION="1.0.0"
     ft.run(main)
