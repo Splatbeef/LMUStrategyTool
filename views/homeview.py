@@ -24,7 +24,8 @@ class HomeView(ft.Container):
             self.overtake_button
         ])
 
-        self.check_row = ft.Row([ft.Button(content="Check Version", on_click=self.check_version_pressed)])
+        self.check_button = ft.Button(content="Check Version", on_click=self.check_version_pressed)
+        self.check_row = ft.Row([])
         self.check_version_pressed()
 
         self.banner = ft.Row([
@@ -150,6 +151,7 @@ class HomeView(ft.Container):
             expand=True,
             content=ft.Column([
                 self.banner,
+                ft.Divider(),
                 self.check_row,
                 ft.Divider(),
                 self.datarow,
@@ -160,6 +162,7 @@ class HomeView(ft.Container):
 
     def check_version_pressed(self, e=None):
         version_check = self.version_service.check_version()
+        self.check_row.controls=[self.check_button]
         if version_check["status"]=="Check Failed":
             self.check_row.controls.append(ft.Text("Version Check Failed"))
         else:

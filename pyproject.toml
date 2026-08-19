@@ -10,8 +10,7 @@ authors = [
 dependencies = [
     "flet>=0.86.5",
     "requests",
-    "pandas",
-    "packaging"
+    "pandas"
 ]
 
 [dependency-groups]
@@ -31,6 +30,15 @@ testpaths = ["tests"]
 [tool.flet]
 product = "LMU Strategy Tool"
 artifact = "LMUStrategyTool"
+excluded = [
+    ".git",
+    ".gitignore",
+    ".vscode",
+    "__pycache__",
+    "build",
+    "dist",
+    "*.pyc"
+]
 
 [tool.flet.app]
 path = "."

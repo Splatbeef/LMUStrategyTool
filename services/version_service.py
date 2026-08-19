@@ -23,7 +23,6 @@ class VersionService:
                 self.GITHUB_API,
                 timeout=5
             )
-            print("Got Response")
 
             response.raise_for_status()
 

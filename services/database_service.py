@@ -3,7 +3,6 @@ from pathlib import Path
 import os
 import sys
 
-
 class DatabaseService:
 
     def __init__(self):
@@ -17,11 +16,11 @@ class DatabaseService:
         return sqlite3.connect(self.db_path)
 
     def get_db_path(self) -> str:
-        if getattr(sys, "frozen", False):
-            appdata=os.getenv("APPDATA")
-            DATA_DIR = Path(appdata) / "LMU Strategy Tool"
-        else:
-            DATA_DIR = Path(__file__).resolve().parent
+        appdata=os.getenv("APPDATA")
+        DATA_DIR = Path(appdata) / "LMUStrategyTool"
+
+        #DATA_DIR = Path(__file__).resolve().parent
+
         DATA_DIR.mkdir(parents=True, exist_ok=True)
 
         return str(DATA_DIR / "database.db")

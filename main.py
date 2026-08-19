@@ -5,7 +5,6 @@ import json
 import sys
 from pathlib import Path
 import requests
-from packaging.version import Version
 import webbrowser
 
 from models import *
@@ -323,7 +322,7 @@ def seed_database(repos: Repositories):
 
 def main(page: ft.Page):
     page.title="LMU Strategy Tool"
-    page.window.icon="icon.ico"
+    page.window.icon="assets/icon_windows.ico"
 
     db=DatabaseService()
     repos = Repositories(db)
