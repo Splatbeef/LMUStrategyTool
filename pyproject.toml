@@ -30,16 +30,25 @@ testpaths = ["tests"]
 [tool.flet]
 product = "LMU Strategy Tool"
 artifact = "LMUStrategyTool"
-excluded = [
-    ".git",
-    ".gitignore",
-    ".vscode",
-    "__pycache__",
-    "build",
-    "dist",
-    "*.pyc"
-]
 
 [tool.flet.app]
 path = "."
 module = "main.py"
+exclude = [
+    ".git",
+    ".flet",
+    ".gitignore",
+    ".vscode",
+    "__pycache__",
+    "controls\\__pycache__",
+    "repositories\\__pycache__",
+    "services\\__pycache__",
+    "views\\__pycache__",
+    "build",
+    "dist",
+    "*.pyc",
+    "LMUStrategyTool.spec",
+    "package.bat",
+    "pyproject.toml",
+    ".gitattributes"
+]

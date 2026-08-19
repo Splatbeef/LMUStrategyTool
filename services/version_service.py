@@ -16,9 +16,9 @@ class VersionService:
 
     def get_latest_version(self) -> str | None:
         try:
-            # last_check = self.repo.get_by_key("VersionCheck")
-            # if last_check.value_str == str(dt.date.today()):
-            #     return APP_VERSION
+            last_check = self.repo.get_by_key("VersionCheck")
+            if last_check.value_str == str(dt.date.today()):
+                return APP_VERSION
             response = requests.get(
                 self.GITHUB_API,
                 timeout=5
