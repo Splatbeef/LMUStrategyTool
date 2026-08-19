@@ -2,6 +2,7 @@ import flet as ft
 import datetime as dt
 
 from repositories.repositories import *
+from services.version_service import *
 
 class HomeView(ft.Container):
     def __init__(self, repos: Repositories):
@@ -11,18 +12,28 @@ class HomeView(ft.Container):
         self.repo_fuel = repos.fuel
         self.repo_laptimes = repos.laptime
         self.repo_strats = repos.strategy
+        self.version_service = VersionService(repos.settings)
 
-        self.versionnumber = self.repo_settings.get_by_key("Version").value_str
+        self.version= self.repo_settings.get_by_key("Version")
+        version_number = self.version.value_str
+        self.overtake_button=ft.Button(content="Overtake", url="https://www.overtake.gg/members/splatbeef.2023019/#resources")
+        self.github_button=ft.Button(content="GitHub", url="https://github.com/Splatbeef/LMUStrategyTool")
+        self.version_column = ft.Column([
+            ft.Text(f"Version: {version_number}", size=16),
+            self.github_button
+        ])
+
+        self.check_row = ft.Row([ft.Button(content="Check Version", on_click=self.check_version_pressed)])
+        self.check_version_pressed()
+
         self.banner = ft.Row([
             #Add icon here
-            ft.Text("LMU Strategy Tool", size=60, weight=ft.FontWeight.BOLD),
-            ft.Container(expand=True),
             ft.Column([
-                ft.Text(f"Version {self.versionnumber}", size=16),
+                ft.Text("LMU Strategy Tool", size=60, weight=ft.FontWeight.BOLD),
                 ft.Text(f"by Splatbeef", size=16)
-            ],
-            expand=False,
-            )
+            ]),
+            ft.Container(expand=True),
+            self.version_column
         ])
 
         numcars = len(self.repo_car.get_all())
@@ -138,9 +149,22 @@ class HomeView(ft.Container):
             expand=True,
             content=ft.Column([
                 self.banner,
+                self.check_row,
                 ft.Divider(),
                 self.datarow,
                 ft.Divider()
             ],
             expand=True)
         )
+
+    def check_version_pressed(self, e=None):
+        version_check = self.version_service.check_version()
+        if version_check["status"]=="Check Failed":
+            self.check_row.controls.append(ft.Text("Version Check Failed"))
+        else:
+            if version_check["up_to_date"]:
+                self.check_row.controls.append(ft.Text("Version Up To Date!"))
+            else:
+                self.check_row.controls.append(ft.Text(f"Latest version available: {version_check["latest"]}"))
+                self.check_row.controls.append(ft.Button(content="View on GitHub", url="https://github.com/Splatbeef/LMUStrategyTool/releases/latest"))
+                self.check_row.controls.append(ft.Button("View on Overtake", url="https://www.overtake.gg/members/splatbeef.2023019/#resources"))

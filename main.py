@@ -9,10 +9,12 @@ from packaging.version import Version
 import webbrowser
 
 from models import *
+from version import *
 from repositories.repositories import *
 
 from services.database_service import *
 from services.reference_service import *
+from services.version_service import *
 
 from views.strategyview import *
 from views.carsview import *
@@ -304,6 +306,19 @@ def seed_database(repos: Repositories):
                         value_float = None,
                     )
                 )
+        if not repos.settings.exists("VersionCheck"):
+            referenceservice = ReferenceService(repos)
+            referenceservice.sync()
+            repos.settings.add(
+                Setting(
+                    id=None,
+                    key="VersionCheck",
+                    value_str = dt.date.today() - dt.timedelta(days=1),
+                    value_bool = True,
+                    value_int = None,
+                    value_float = None,
+                )
+            )
     seed_settings()
 
 def main(page: ft.Page):
@@ -315,10 +330,14 @@ def main(page: ft.Page):
 
     seed_database(repos)
 
+    previous_version = repos.settings.get_by_key("Version")
+    if previous_version.value_str != APP_VERSION:
+        version_service = VersionService(repos.settings)
+        version_service.update_version(previous_version)
+
     MainApp(
         page=page,
         repos=repos)
 
 if __name__ == "__main__":
-    APP_VERSION="1.0.0"
     ft.run(main)
