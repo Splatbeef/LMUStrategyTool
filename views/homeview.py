@@ -20,7 +20,8 @@ class HomeView(ft.Container):
         self.github_button=ft.Button(content="GitHub", url="https://github.com/Splatbeef/LMUStrategyTool")
         self.version_column = ft.Column([
             ft.Text(f"Version: {version_number}", size=16),
-            self.github_button
+            self.github_button,
+            self.overtake_button
         ])
 
         self.check_row = ft.Row([ft.Button(content="Check Version", on_click=self.check_version_pressed)])
